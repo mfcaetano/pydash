@@ -1,0 +1,7 @@
+{
+    "buffer_size": 120,
+    "buffering_until": 5,
+    "max_buffer_size": 60,
+    "playbak_step": 1,
+    "url_mpd": "http://ftp.itec.aau.at/datasets/DASHDataset2014/BigBuckBunny/1sec/BigBuckBunny_1s_simple_2014_05_09.mpd"
+}
