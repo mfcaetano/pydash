@@ -1,8 +1,6 @@
-
-
-'''
+"""
 The Scheduler is a Singleton class implementation
-'''
+"""
 
 
 class Scheduler:

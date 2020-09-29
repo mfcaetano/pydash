@@ -1,9 +1,12 @@
 from player.player import Player
+from connection.handler_connection import Handler_Connection
 from base.scheduler import Scheduler
 from r2a.r2a_fixed import R2A_Fixed
 from base.simple_module import Simple_Module
 
 player = Player.get_instance(0)
+
+handler_connection = Handler_Connection.get_instance(1)
 
 player.send_up("teste")
 
