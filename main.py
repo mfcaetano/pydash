@@ -3,13 +3,12 @@ from base.scheduler import Scheduler
 from r2a.r2a_fixed import R2A_Fixed
 from base.simple_module import Simple_Module
 
-player = Player(0)
+player = Player.get_instance(0)
 
 player.send_up("teste")
 
-'''
 print(player.get_amount_of_video_to_play())
-
+'''
 s1 = Scheduler.get_instance()
 s2 = Scheduler.get_instance()
 

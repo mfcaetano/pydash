@@ -1,4 +1,3 @@
-
 import json
 from player.out_vector import Out_Vector
 from base.simple_module import Simple_Module
@@ -6,11 +5,21 @@ from base.simple_module import Simple_Module
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
 qi         - indice de qualidade normalizado
-segment_id - número de sequência do arquivo de video 
+segment_id - número de sequência do arquivo de video
+
+Player is a Singleton class implementation
 
 '''
 
-class Player (Simple_Module):
+
+class Player(Simple_Module):
+    __instance = None
+
+    @classmethod
+    def get_instance(cls, id):
+        if cls.__instance is None:
+            cls.__instance = cls(id)
+        return cls.__instance
 
     def __init__(self, id):
 
@@ -19,38 +28,37 @@ class Player (Simple_Module):
         with open('player/player.json') as f:
             player_parameters = json.load(f)
 
-        self.buffer_size     = int(player_parameters['buffer_size'])
+        self.buffer_size = int(player_parameters['buffer_size'])
         self.buffering_until = int(player_parameters['buffering_until'])
         self.max_buffer_size = int(player_parameters['max_buffer_size'])
-        self.playback_step   = int(player_parameters['playbak_step'])
-        self.url_mpd         = player_parameters['url_mpd']
+        self.playback_step = int(player_parameters['playbak_step'])
+        self.url_mpd = player_parameters['url_mpd']
 
-        #last pause started at time
-        self.pause_started_at    = 0
+        # last pause started at time
+        self.pause_started_at = 0
 
-        #tag to verify if buffer has an minimal amount of data
+        # tag to verify if buffer has an minimal amount of data
         self.buffer_initialization = True
 
-        #Does the player already started to download a segment?
+        # Does the player already started to download a segment?
         self.already_downloading = False
 
-        #buffer itself
-        self.buffer              = []
+        # buffer itself
+        self.buffer = []
 
-        #the buffer played position
-        self.buffer_played       = 0
+        # the buffer played position
+        self.buffer_played = 0
 
-        #history of what was played in buffer
-        self.playback_history    = []
+        # history of what was played in buffer
+        self.playback_history = []
 
-        #for the statistics purpose
-        self.playback_qi          = Out_Vector()
-        self.playback_pauses      = Out_Vector()
-        self.playback             = Out_Vector()
+        # for the statistics purpose
+        self.playback_qi = Out_Vector()
+        self.playback_pauses = Out_Vector()
+        self.playback = Out_Vector()
         self.playback_buffer_size = Out_Vector()
 
-
-    #data for r2a algorithms
+    # data for r2a algorithms
     def get_playback_history(self):
         return self.playback_history
 
@@ -70,31 +78,28 @@ class Player (Simple_Module):
     def handle_video_playback(self):
         return False
 
-
     def buffering_video_segment(self, video_segment):
 
-        #buffer already stored the segment id
+        # buffer already stored the segment id
         if video_segment.get_segment_id() > len(self.buffer):
             print(f'buffer: {self.buffer}')
             print(f'video segment: {video_segment.get_segment_id}')
             exit(-1)
 
-        #adding the segment in the buffer
+        # adding the segment in the buffer
         self.buffer.append(video_segment.get_qi())
 
         if self.buffer_initialization and self.get_amount_of_video_to_play() >= self.buffering_until:
             self.buffer_initialization = False
             print('with buffering')
-            #start the process to play the video
+            # start the process to play the video
 
         elif not self.buffer_initialization and self.get_amount_of_video_to_play() > 0:
             # start the process to play the video
             print('not with buffering')
-
 
     def initialize(self, msg):
         pass
 
     def handle_message(self, msg):
         pass
-
