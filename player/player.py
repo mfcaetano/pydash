@@ -12,7 +12,10 @@ segment_id - número de sequência do arquivo de video
 
 class Player (Simple_Module):
 
-    def __init__(self):
+    def __init__(self, id):
+
+        Simple_Module.__init__(self, id)
+
         with open('player/player.json') as f:
             player_parameters = json.load(f)
 

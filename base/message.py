@@ -11,3 +11,6 @@ class Message(Enum):
 
     def __init__(self, payload):
         self.payload = payload
+
+    def get_payload(self):
+        return self.payload
