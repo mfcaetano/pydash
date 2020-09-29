@@ -1,17 +1,25 @@
 from player.player import Player
-from connection.handler_connection import Handler_Connection
+from connection.connection_handler import Connection_Handler
 from base.scheduler import Scheduler
 from r2a.r2a_fixed import R2A_Fixed
 from base.simple_module import Simple_Module
+from dash_client import Dash_Client
 
+dash_client = Dash_Client()
+
+
+
+
+
+'''
 player = Player.get_instance(0)
 
-handler_connection = Handler_Connection.get_instance(1)
+handler_connection = Connection_Handler.get_instance(1)
 
 player.send_up("teste")
 
 print(player.get_amount_of_video_to_play())
-'''
+
 s1 = Scheduler.get_instance()
 s2 = Scheduler.get_instance()
 

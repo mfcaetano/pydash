@@ -2,9 +2,9 @@
 from base.simple_module import Simple_Module
 
 """
-The Handler_Connection is a Singleton class implementation
+The Connection_Handler is a Singleton class implementation
 """
-class Handler_Connection(Simple_Module):
+class Connection_Handler(Simple_Module):
     __instance = None
 
     @classmethod

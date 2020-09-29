@@ -3,9 +3,8 @@ from r2a.ir2a import IR2A
 
 class R2A_Fixed(IR2A):
 
-    def __init__(self):
-        super().__init__()
-
+    def __init__(self, id):
+        IR2A.__init__(self, id)
 
     def handle_xml_request(self):
         print('handle_xml_request')
@@ -18,3 +17,10 @@ class R2A_Fixed(IR2A):
 
     def handle_segment_size_respose(self):
         print("handle_segment_size_respose")
+
+    def initialize(self, msg):
+        pass
+
+    def handle_message(self, msg):
+        pass
+
