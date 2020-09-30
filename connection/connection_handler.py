@@ -1,5 +1,6 @@
 
 from base.simple_module import Simple_Module
+from base.message import Message, Message_Kind
 
 """
 The Connection_Handler is a Singleton class implementation
@@ -11,6 +12,8 @@ class Connection_Handler(Simple_Module):
 
 
     def initialize(self):
+        #self.send_down(Message(Message_Kind.SEGMENT_REQUEST, 'Olá Mundo'))
+
         pass
 
     def finalization(self):

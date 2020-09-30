@@ -1,6 +1,7 @@
 import json
 from player.out_vector import Out_Vector
 from base.simple_module import Simple_Module
+from base.message import *
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -93,6 +94,7 @@ class Player(Simple_Module):
             print('not with buffering')
 
     def initialize(self):
+
         pass
 
     def finalization(self):
