@@ -13,7 +13,7 @@ from base.scheduler_event import Scheduler_Event
 class Simple_Module(metaclass=ABCMeta):
 
     def __init__(self, id):
-        self.scheduler = Scheduler.get_instance()
+        self.scheduler = Scheduler()
         self.id = id
 
     def send_up(self, msg):

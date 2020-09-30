@@ -2,18 +2,12 @@
 The Scheduler is a Singleton class implementation
 """
 
+from base.singleton import Singleton
 
-class Scheduler:
-    __instance = None
+class Scheduler(metaclass=Singleton):
 
-    def __init__(self, id):
+    def __init__(self):
         self.events = []
-
-    @classmethod
-    def get_instance(cls):
-        if cls.__instance is None:
-            cls.__instance = cls
-        return cls.__instance
 
     def add_event(self, event):
         self.events.append(event)
@@ -22,5 +16,5 @@ class Scheduler:
         return self.events.pop(0)
 
     def is_empty(self):
-        return self.events == []
+        return bool(self.events == [])
 

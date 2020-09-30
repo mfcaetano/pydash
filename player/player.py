@@ -13,13 +13,7 @@ Player is a Singleton class implementation
 
 
 class Player(Simple_Module):
-    __instance = None
 
-    @classmethod
-    def get_instance(cls, id):
-        if cls.__instance is None:
-            cls.__instance = cls(id)
-        return cls.__instance
 
     def __init__(self, id):
 
@@ -105,4 +99,5 @@ class Player(Simple_Module):
         pass
 
     def handle_message(self, msg):
+        print(f'Player recebi uma msg {msg.get_payload()}')
         pass

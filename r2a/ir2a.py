@@ -5,13 +5,6 @@ Abstract Class for R2A Implementations
 Rate Adaptation Algorithms
 '''
 class IR2A(Simple_Module):
-    __instance = None
-
-    @classmethod
-    def get_instance(cls, id):
-        if cls.__instance is None:
-            cls.__instance = cls(id)
-        return cls.__instance
 
     def __init__(self, id):
         Simple_Module.__init__(self, id)
@@ -44,4 +37,5 @@ class IR2A(Simple_Module):
 
     @abstractmethod
     def handle_message(self, msg):
+        print(f'IR2A recebi uma msg {msg.get_payload()}')
         pass
