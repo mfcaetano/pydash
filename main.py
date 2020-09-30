@@ -6,6 +6,7 @@ from base.simple_module import Simple_Module
 from dash_client import Dash_Client
 
 dash_client = Dash_Client()
+dash_client.run_application()
 
 
 

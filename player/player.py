@@ -98,7 +98,10 @@ class Player(Simple_Module):
             # start the process to play the video
             print('not with buffering')
 
-    def initialize(self, msg):
+    def initialize(self):
+        pass
+
+    def finalization(self):
         pass
 
     def handle_message(self, msg):

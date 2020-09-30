@@ -28,9 +28,15 @@ class Simple_Module(metaclass=ABCMeta):
         self.scheduler.add_event(Scheduler_Event(msg, self.id, self.id+1))
 
     @abstractmethod
-    def initialize(self, msg):
+    def initialize(self):
+        print(f'> Initializing module {self.__class__.__name__}')
         pass
 
     @abstractmethod
-    def handle_message(self, msg):
+    def finalization(self):
+        print(f'> Finalization module {self.__class__.__name__}')
+        pass
+
+    @abstractmethod
+    def handle_message(self):
         pass

@@ -17,7 +17,10 @@ class Connection_Handler(Simple_Module):
         Simple_Module.__init__(self, id)
 
 
-    def initialize(self, msg):
+    def initialize(self):
+        pass
+
+    def finalization(self):
         pass
 
     def handle_message(self, msg):

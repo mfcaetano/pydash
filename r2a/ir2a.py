@@ -33,7 +33,13 @@ class IR2A(Simple_Module):
         pass
 
     @abstractmethod
-    def initialize(self, msg):
+    def initialize(self):
+        Simple_Module.initialize(self)
+        pass
+
+    @abstractmethod
+    def finalization(self):
+        Simple_Module.finalization(self)
         pass
 
     @abstractmethod

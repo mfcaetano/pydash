@@ -14,10 +14,6 @@ class Dash_Client:
 
         r2a_algorithm = str(dash_client_parameters['r2a_algorithm'])
 
-        # automatic loading class by the name
-        r2a_class = getattr(importlib.import_module('r2a.' + r2a_algorithm.lower()), r2a_algorithm)
-        self.r2a = r2a_class.get_instance(2)
-
         self.scheduler = Scheduler.get_instance()
 
         self.modules = []
@@ -25,4 +21,34 @@ class Dash_Client:
         # adding modules to manage
         self.player = Player.get_instance(0)
 
-        self.connection_handler = Connection_Handler.get_instance(1)
+        # automatic loading class by the name
+        r2a_class = getattr(importlib.import_module('r2a.' + r2a_algorithm.lower()), r2a_algorithm)
+        self.r2a = r2a_class.get_instance(1)
+
+        self.connection_handler = Connection_Handler.get_instance(2)
+
+        self.modules.append(self.player)
+        self.modules.append(self.r2a)
+        self.modules.append(self.connection_handler)
+
+
+    def run_application(self):
+        self.modules_initialization()
+
+
+
+
+        self.modules_finalization()
+
+
+    def modules_initialization(self):
+        print('Initialization modules phase.')
+        for m in self.modules:
+            super(type(m), m).initialize()
+            m.initialize()
+
+    def modules_finalization(self):
+        print('Finalization modules phase.')
+        for m in self.modules:
+            super(type(m), m).finalization()
+            m.finalization()

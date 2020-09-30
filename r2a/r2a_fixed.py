@@ -18,7 +18,10 @@ class R2A_Fixed(IR2A):
     def handle_segment_size_respose(self):
         print("handle_segment_size_respose")
 
-    def initialize(self, msg):
+    def initialize(self):
+        pass
+
+    def finalization(self):
         pass
 
     def handle_message(self, msg):
