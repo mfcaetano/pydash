@@ -4,15 +4,15 @@ import r2a
 from player.player import Player
 from base.scheduler import Scheduler
 from connection.connection_handler import Connection_Handler
+from base.configuration_parser import Configuration_Parser
 
 
 class Dash_Client:
 
     def __init__(self):
-        with open('dash_client.json') as f:
-            dash_client_parameters = json.load(f)
+        config_parser = Configuration_Parser.get_instance()
 
-        r2a_algorithm = str(dash_client_parameters['r2a_algorithm'])
+        r2a_algorithm = str(config_parser.get_parameter('r2a_algorithm'))
 
         self.scheduler = Scheduler()
 

@@ -1,7 +1,8 @@
-import json
+
 from player.out_vector import Out_Vector
 from base.simple_module import Simple_Module
 from base.message import *
+from base.configuration_parser import Configuration_Parser
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -17,17 +18,15 @@ class Player(Simple_Module):
 
 
     def __init__(self, id):
-
         Simple_Module.__init__(self, id)
 
-        with open('player/player.json') as f:
-            player_parameters = json.load(f)
+        config_parser = Configuration_Parser.get_instance()
 
-        self.buffer_size = int(player_parameters['buffer_size'])
-        self.buffering_until = int(player_parameters['buffering_until'])
-        self.max_buffer_size = int(player_parameters['max_buffer_size'])
-        self.playback_step = int(player_parameters['playbak_step'])
-        self.url_mpd = player_parameters['url_mpd']
+        self.buffer_size = int(config_parser.get_parameter('buffer_size'))
+        self.buffering_until = int(config_parser.get_parameter('buffering_until'))
+        self.max_buffer_size = int(config_parser.get_parameter('max_buffer_size'))
+        self.playback_step = int(config_parser.get_parameter('playbak_step'))
+        self.url_mpd = config_parser.get_parameter('url_mpd')
 
         # last pause started at time
         self.pause_started_at = 0
