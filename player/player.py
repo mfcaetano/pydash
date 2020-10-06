@@ -3,6 +3,7 @@ from player.out_vector import Out_Vector
 from base.simple_module import Simple_Module
 from base.message import *
 from base.configuration_parser import Configuration_Parser
+from player.parser import *
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -15,7 +16,6 @@ Player is a Singleton class implementation
 
 
 class Player(Simple_Module):
-
 
     def __init__(self, id):
         Simple_Module.__init__(self, id)
@@ -45,6 +45,9 @@ class Player(Simple_Module):
 
         # history of what was played in buffer
         self.playback_history = []
+
+        self.parsed_mpd = ''
+        self.qi         = []
 
         # for the statistics purpose
         self.playback_qi = Out_Vector()
@@ -93,12 +96,32 @@ class Player(Simple_Module):
             print('not with buffering')
 
     def initialize(self):
-
-        pass
+        #starting the application downloading mdp file
+        xml_request = Message(Message_Kind.XML_REQUEST, self.url_mpd)
+        self.send_down(xml_request)
 
     def finalization(self):
         pass
 
-    def handle_message(self, msg):
-        print(f'Player recebi uma msg {msg.get_payload()}')
+
+    def handle_xml_request(self, msg):
         pass
+
+    def handle_xml_response(self, msg):
+        print('Player().handle_xml_response()')
+
+        self.parsed_mpd = parse_mpd(msg.get_payload())
+        self.qi = self.parsed_mpd.get_qi()
+
+        for i in range(len(self.qi)):
+            print(f' q[{i}] = {self.qi[i]}')
+
+
+        pass
+
+    def handle_segment_size_request(self, msg):
+        pass
+
+    def handle_segment_size_response(self, msg):
+        pass
+

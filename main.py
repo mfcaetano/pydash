@@ -6,11 +6,12 @@ from r2a.r2a_fixed import R2A_Fixed
 from base.simple_module import Simple_Module
 from dash_client import Dash_Client
 from base.configuration_parser import Configuration_Parser
+from player.parser import *
+
 
 dash_client = Dash_Client()
 dash_client.run_application()
 #dash_client.handle_scheduler_event(Scheduler_Event('Hello World', 0, 1))
-
 
 
 '''
