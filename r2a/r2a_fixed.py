@@ -11,13 +11,9 @@ class R2A_Fixed(IR2A):
         self.qi         = []
 
     def handle_xml_request(self, msg):
-        print('R2A_Fixed().handle_xml_request())')
-
         self.send_down(msg)
 
     def handle_xml_response(self, msg):
-        print('R2A_Fixed().handle_xml_response()')
-
         #getting qi list
         self.parsed_mpd = parse_mpd(msg.get_payload())
         self.qi = self.parsed_mpd.get_qi()
@@ -25,8 +21,6 @@ class R2A_Fixed(IR2A):
         self.send_up(msg)
 
     def handle_segment_size_request(self, msg):
-        print('R2A_Fixed().handle_segment_size_request()')
-
         #Hora de definir qual qualidade será escolhida
         msg.add_quality_id(self.qi[0])
 
@@ -36,8 +30,6 @@ class R2A_Fixed(IR2A):
 
 
     def handle_segment_size_response(self, msg):
-        print(f"R2A_Fixed().handle_segment_size_response()")
-
         self.send_up(msg)
 
 

@@ -25,8 +25,6 @@ class Connection_Handler(Simple_Module):
 #        pass
 
     def handle_xml_request(self, msg):
-        print(f'Connection_Handler().handle_xml_request - {msg.get_payload()}')
-
         if not 'http://' in msg.get_payload():
             raise ValueError('url_mpd parameter should starts with http://')
 
@@ -53,8 +51,6 @@ class Connection_Handler(Simple_Module):
 
 
     def handle_segment_size_request(self, msg):
-        print(f'Connection_Handler().handle_segment_size_request()')
-
         port = '80'
         host_name = msg.get_host_name()
         path_name = msg.get_url()
@@ -73,11 +69,17 @@ class Connection_Handler(Simple_Module):
 
         msg.set_kind(Message_Kind.SEGMENT_RESPONSE)
 
+        decoded = False
+
         try:
             ss_file = ss_file.decode()
         except UnicodeDecodeError:
             #if wasn't possible to decode() is a ss
             msg.add_bit_length(len(ss_file))
+            decoded = True
+
+        if not decoded and '404 Not Found' in ss_file:
+            msg.set_found(False)
 
         self.send_up(msg)
 

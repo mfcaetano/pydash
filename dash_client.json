@@ -1,5 +1,4 @@
 {
-    "buffer_size": 120,
     "buffering_until": 5,
     "max_buffer_size": 60,
     "playbak_step": 1,

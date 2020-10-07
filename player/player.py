@@ -22,7 +22,6 @@ class Player(Simple_Module):
 
         config_parser = Configuration_Parser.get_instance()
 
-        self.buffer_size = int(config_parser.get_parameter('buffer_size'))
         self.buffering_until = int(config_parser.get_parameter('buffering_until'))
         self.max_buffer_size = int(config_parser.get_parameter('max_buffer_size'))
         self.playback_step = int(config_parser.get_parameter('playbak_step'))
@@ -58,6 +57,9 @@ class Player(Simple_Module):
         self.playback = Out_Vector()
         self.playback_buffer_size = Out_Vector()
 
+    def get_qi(self, quality_qi):
+        return self.qi.index(quality_qi)
+
     # data for r2a algorithms
     def get_playback_history(self):
         return self.playback_history
@@ -68,8 +70,8 @@ class Player(Simple_Module):
     def is_there_something_to_play(self):
         return bool(len(self.buffer) - self.buffer_played > 0)
 
-    def is_buffer_full(self):
-        return bool((len(self.buffer) - self.buffer_played) >= self.buffer_size)
+    def is_buffer_achieve_max_size(self):
+        return bool(self.get_amount_of_video_to_play() >= self.max_buffer_size)
 
     def get_current_playtime_position(self):
         return self.buffer_played
@@ -78,27 +80,30 @@ class Player(Simple_Module):
     def handle_video_playback(self):
         return False
 
-    def buffering_video_segment(self, video_segment):
+    def buffering_video_segment(self, msg):
 
         # buffer already stored the segment id
-        if video_segment.get_segment_id() > len(self.buffer):
-            print(f'buffer: {self.buffer}')
-            print(f'video segment: {video_segment.get_segment_id}')
-            exit(-1)
+        if len(self.buffer) >= msg.get_segment_id():
+            raise ValueError(f'buffer: {self.buffer}, {msg}')
 
         # adding the segment in the buffer
-        self.buffer.append(video_segment.get_qi())
+        self.buffer.append(self.get_qi(msg.get_quality_id()))
 
         if self.buffer_initialization and self.get_amount_of_video_to_play() >= self.buffering_until:
             self.buffer_initialization = False
-            print('with buffering')
+            print('> buffering process is concluded')
             # start the process to play the video
 
-        elif not self.buffer_initialization and self.get_amount_of_video_to_play() > 0:
+        if not self.buffer_initialization and self.get_amount_of_video_to_play() > 0:
             # start the process to play the video
-            print('not with buffering')
+            print('> I can restart playing process')
 
-    def request_segment(self):
+
+    def request_next_segment(self):
+
+        if self.already_downloading:
+            raise ValueError('Something doesn\'t look right, a segment is already being downloaded!')
+
         segment_request = SS_Message(Message_Kind.SEGMENT_REQUEST)
 
         url_tokens = self.url_mpd.split('/')
@@ -109,6 +114,9 @@ class Player(Simple_Module):
         segment_request.add_segment_id(self.segment_id)
 
         self.segment_id += 1
+
+        #set status to downloading a segment
+        self.already_downloading = True
 
         self.send_down(segment_request)
 
@@ -123,20 +131,29 @@ class Player(Simple_Module):
 
 
     def handle_xml_response(self, msg):
-        print('Player().handle_xml_response()')
-
         self.parsed_mpd = parse_mpd(msg.get_payload())
         self.qi = self.parsed_mpd.get_qi()
 
-        self.request_segment()
+
+        self.request_next_segment()
 
 
     def handle_segment_size_response(self, msg):
-        print('Player().handle_segment_size_response()')
 
-        print(msg)
+        # set status to not downloading a segment
+        self.already_downloading = False
 
-        pass
+        print(f'> received: {msg}')
+
+        if msg.found():
+            self.buffering_video_segment(msg)
+
+            #for statistical purpose
+            self.playback_buffer_size.add(self.get_amount_of_video_to_play())
+
+            #still have space in buffer to download next ss
+            if not self.is_buffer_achieve_max_size():
+                self.request_next_segment()
 
 
 

@@ -34,9 +34,10 @@ class SS_Message(Message):
         self.quality_id = 0
         self.segment_id = 0
         self.bit_length = 0
+        self.__found = True
 
     def __str__(self):
-        return f'{self.path_name}, {self.media_mpd}, {self.host_name}, {self.quality_id}, {self.segment_id}, {self.bit_length}'
+        return f'{self.segment_id}, {self.quality_id}, {self.bit_length}, {self.__found}, {self.path_name}, {self.media_mpd}, {self.host_name}'
 
     def set_kind(self, kind):
         self.kind = kind
@@ -56,14 +57,23 @@ class SS_Message(Message):
     def add_segment_id(self, segment_id):
         self.segment_id = segment_id
 
+    def get_segment_id(self):
+        return self.segment_id
+
     def add_media_mpd(self, media_mpd):
         self.media_mpd = media_mpd
 
     def add_quality_id(self, quality_id):
         self.quality_id = quality_id
 
-    def was_found_ss(self):
-        return bool(self.bit_length > 0)
+    def get_quality_id(self):
+        return self.quality_id
+
+    def set_found(self, status):
+        self.__found = status
+
+    def found(self):
+        return bool(self.bit_length > 0 and self.__found)
 
     def get_url(self):
         self.media_mpd = self.media_mpd.replace('$Bandwidth$', str(self.quality_id))
