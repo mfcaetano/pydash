@@ -46,6 +46,9 @@ class Player(Simple_Module):
         # history of what was played in buffer
         self.playback_history = []
 
+        #initialize with the first segment sequence number to download
+        self.segment_id = 1
+
         self.parsed_mpd = ''
         self.qi         = []
 
@@ -95,6 +98,21 @@ class Player(Simple_Module):
             # start the process to play the video
             print('not with buffering')
 
+    def request_segment(self):
+        segment_request = SS_Message(Message_Kind.SEGMENT_REQUEST)
+
+        url_tokens = self.url_mpd.split('/')
+
+        segment_request.add_host_name(url_tokens[2])
+        segment_request.add_path_name('/'.join(url_tokens[:len(url_tokens)-1]))
+        segment_request.add_media_mpd(navigate_mpd(self.parsed_mpd, 'media')[1])
+        segment_request.add_segment_id(self.segment_id)
+
+        self.segment_id += 1
+
+        self.send_down(segment_request)
+
+
     def initialize(self):
         #starting the application downloading mdp file
         xml_request = Message(Message_Kind.XML_REQUEST, self.url_mpd)
@@ -104,24 +122,26 @@ class Player(Simple_Module):
         pass
 
 
-    def handle_xml_request(self, msg):
-        pass
-
     def handle_xml_response(self, msg):
         print('Player().handle_xml_response()')
 
         self.parsed_mpd = parse_mpd(msg.get_payload())
         self.qi = self.parsed_mpd.get_qi()
 
-        for i in range(len(self.qi)):
-            print(f' q[{i}] = {self.qi[i]}')
+        self.request_segment()
 
 
+    def handle_segment_size_response(self, msg):
+        print('Player().handle_segment_size_response()')
+
+        print(msg)
+
+        pass
+
+
+
+    def handle_xml_request(self, msg):
         pass
 
     def handle_segment_size_request(self, msg):
         pass
-
-    def handle_segment_size_response(self, msg):
-        pass
-

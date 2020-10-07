@@ -27,8 +27,21 @@ class R2A_Fixed(IR2A):
     def handle_segment_size_request(self, msg):
         print('R2A_Fixed().handle_segment_size_request()')
 
+        #Hora de definir qual qualidade será escolhida
+        msg.add_quality_id(self.qi[0])
+
+        self.send_down(msg)
+
+
+
+
     def handle_segment_size_response(self, msg):
-        print(f"R2A_Fixed().handle_segment_size_response - {msg.get_payload()}")
+        print(f"R2A_Fixed().handle_segment_size_response()")
+
+        self.send_up(msg)
+
+
+
 
     def initialize(self):
         #self.send_up(Message(Message_Kind.SEGMENT_REQUEST, 'Olá Mundo'))

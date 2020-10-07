@@ -53,8 +53,33 @@ class Connection_Handler(Simple_Module):
 
 
     def handle_segment_size_request(self, msg):
-        pass
+        print(f'Connection_Handler().handle_segment_size_request()')
 
+        port = '80'
+        host_name = msg.get_host_name()
+        path_name = msg.get_url()
+        ss_file = ''
+
+        try:
+            connection = http.client.HTTPConnection(host_name, port)
+            connection.request('GET', path_name)
+            ss_file = connection.getresponse().read()
+            connection.close()
+        except Exception as err:
+            print('> Houston, we have a problem!')
+            print(f'> trying to connecto to: {msg.get_payload()}')
+            print(err)
+            exit(-1)
+
+        msg.set_kind(Message_Kind.SEGMENT_RESPONSE)
+
+        try:
+            ss_file = ss_file.decode()
+        except UnicodeDecodeError:
+            #if wasn't possible to decode() is a ss
+            msg.add_bit_length(len(ss_file))
+
+        self.send_up(msg)
 
 
 
