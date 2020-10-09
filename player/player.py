@@ -124,6 +124,7 @@ class Player(Simple_Module):
 
                 buffer_size = len(self.buffer) - self.buffer_played
                 self.playback_buffer_size.add(buffer_size)
+                print(f'buffer size: {buffer_size}')
 
                 if self.pause_started_at is not None:
                     pause_time = (time.time_ns() - self.pause_started_at) * 1e-9
@@ -138,7 +139,7 @@ class Player(Simple_Module):
             buffer_size = len(self.buffer) - self.buffer_played
             self.lock.release()
 
-            if self.kill_playback_thread and buffer_size <= 0:
+            if (not threading.main_thread().is_alive() or self.kill_playback_thread) and buffer_size <= 0:
                 print(f'thread {threading.get_ident()} sendo morta')
                 break
 
