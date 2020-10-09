@@ -60,6 +60,9 @@ class SS_Message(Message):
     def get_segment_id(self):
         return self.segment_id
 
+    def get_segment_size(self):
+        return int(self.path_name.split('/').pop().split('sec')[0])
+
     def add_media_mpd(self, media_mpd):
         self.media_mpd = media_mpd
 

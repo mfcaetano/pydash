@@ -50,7 +50,7 @@ class Player(Simple_Module):
         self.playback_history = []
 
         #initialize with the first segment sequence number to download
-        self.segment_id = 1
+        self.segment_id   = 1
 
         self.parsed_mpd = ''
         self.qi         = []
@@ -140,7 +140,7 @@ class Player(Simple_Module):
             self.lock.release()
 
             if (not threading.main_thread().is_alive() or self.kill_playback_thread) and buffer_size <= 0:
-                print(f'thread {threading.get_ident()} sendo morta')
+                print(f'thread {threading.get_ident()} will be killed.')
                 break
 
             #playback steps
@@ -151,11 +151,11 @@ class Player(Simple_Module):
     def buffering_video_segment(self, msg):
         # buffer already stored the segment id
         buffer_size = self.get_buffer_size()
-        if buffer_size  >= msg.get_segment_id():
+        if buffer_size  >= ((msg.get_segment_id()-1)*msg.get_segment_size() + 1):
             raise ValueError(f'buffer: {buffer_size}, {msg}')
 
         # adding the segment in the buffer
-        self.store_in_buffer(self.get_qi(msg.get_quality_id()))
+        self.store_in_buffer(self.get_qi(msg.get_quality_id()), msg.get_segment_size())
 
         if self.buffer_initialization and self.get_amount_of_video_to_play() >= self.buffering_until:
             self.buffer_initialization = False
@@ -167,9 +167,10 @@ class Player(Simple_Module):
             # start the process to play the video
         #    print('> I can restart playing process')
 
-    def store_in_buffer(self, qi):
+    def store_in_buffer(self, qi, segment_size):
         self.lock.acquire()
-        self.buffer.append(qi)
+        for i in range(segment_size):
+            self.buffer.append(qi)
         self.lock.release()
 
     def request_next_segment(self):
