@@ -6,4 +6,4 @@ class Out_Vector:
         self.items = []
 
     def add(self, item):
-        self.items.append((time.time_ns(), item))
+        self.items.append((time.time(), item))

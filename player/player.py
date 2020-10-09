@@ -127,12 +127,12 @@ class Player(Simple_Module):
                 print(f'buffer size: {buffer_size}')
 
                 if self.pause_started_at is not None:
-                    pause_time = (time.time_ns() - self.pause_started_at) * 1e-9
+                    pause_time = (time.time() - self.pause_started_at) * 1e-9
                     self.playback_pauses.add(pause_time)
                     self.pause_started_at = None
             else:
                 self.pauses_number += 1
-                self.pause_started_at = time.time_ns()
+                self.pause_started_at = time.time()
                 self.playback.add(0)
 
             #update buffer_size

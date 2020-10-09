@@ -1,7 +1,8 @@
 
 from base.simple_module import Simple_Module
-from base.message import Message, Message_Kind
+from base.message import Message, Message_Kind, SS_Message
 import http.client
+import time
 
 """
 The Connection_Handler is a Singleton class implementation
@@ -24,7 +25,7 @@ class Connection_Handler(Simple_Module):
 #        print(f'Connection_Handler recebi uma msg {msg.get_payload()}')
 #        pass
 
-    def handle_xml_request(self, msg):
+    def handle_xml_request(self, msg: SS_Message):
         if not 'http://' in msg.get_payload():
             raise ValueError('url_mpd parameter should starts with http://')
 
@@ -50,17 +51,20 @@ class Connection_Handler(Simple_Module):
         self.send_up(xml_response)
 
 
-    def handle_segment_size_request(self, msg):
+    def handle_segment_size_request(self, msg: SS_Message) -> None:
         port = '80'
         host_name = msg.get_host_name()
         path_name = msg.get_url()
         ss_file = ''
 
         try:
+            start = time.time()
             connection = http.client.HTTPConnection(host_name, port)
             connection.request('GET', path_name)
             ss_file = connection.getresponse().read()
             connection.close()
+            end = time.time()
+            print('Elapsed time to GET ' + str(msg.get_segment_id()) + ' => ' + str(end - start))
         except Exception as err:
             print('> Houston, we have a problem!')
             print(f'> trying to connecto to: {msg.get_payload()}')
