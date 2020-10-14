@@ -1,9 +1,12 @@
-import time
+import datetime
 
 class Out_Vector:
 
     def __init__(self):
         self.items = []
 
-    def add(self, item):
-        self.items.append((time.time_ns(), item))
+    def add(self, t, item):
+        self.items.append((t, item))
+
+    def __str__(self):
+        return self.items.__str__()

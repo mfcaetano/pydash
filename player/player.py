@@ -6,7 +6,6 @@ from base.configuration_parser import Configuration_Parser
 from player.parser import *
 import threading
 import time
-import math
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -62,6 +61,10 @@ class Player(Simple_Module):
         self.kill_playback_thread = False
 
         # for the statistics purpose
+        self.lock.acquire()
+        self.started_time = time.perf_counter()
+        self.lock.release()
+
         self.playback_qi = Out_Vector()
         self.playback_quality_qi = Out_Vector()
         self.playback_pauses = Out_Vector()
@@ -70,6 +73,9 @@ class Player(Simple_Module):
 
     def get_qi(self, quality_qi):
         return self.qi.index(quality_qi)
+
+    def get_current_time(self):
+        return round(time.perf_counter() - self.started_time, 6)
 
     # data for r2a algorithms
     #def get_playback_history(self):
@@ -99,52 +105,53 @@ class Player(Simple_Module):
 
     # called function every time a segment was played
     def handle_video_playback(self):
-
         while True:
-            print(f'player acordou {time.time()}')
-
             self.lock.acquire()
-            buffer_size = len(self.buffer) - self.buffer_played
+            current_time = self.get_current_time()
+            buffer_size  = len(self.buffer) - self.buffer_played
+            #print(f'{current_time} player acordou')
 
             #there is something to play
             if buffer_size > 0:
                 #player thread is sleeping.
                 if buffer_size >= self.max_buffer_size and not self.already_downloading:
-                    print('Acordar Player Thread!')
+                    print(f'{current_time} Acordar Player Thread!')
                     self.player_thread_events.set()
                     self.player_thread_events.clear()
 
                 for i in range(self.playback_step):
                     qi = self.buffer[self.buffer_played]
-                    self.playback_qi.add(qi)
-                    self.playback_quality_qi.add(self.qi[qi])
-                    self.playback.add(1)
+                    self.playback_qi.add(current_time, qi)
+                    self.playback_quality_qi.add(current_time, self.qi[qi])
+                    self.playback.add(current_time, 1)
 
                     self.buffer_played += 1
 
                 buffer_size = len(self.buffer) - self.buffer_played
-                self.playback_buffer_size.add(buffer_size)
-                print(f'buffer size: {buffer_size}')
+                self.playback_buffer_size.add(current_time, buffer_size)
+                print(f'{current_time} buffer size: {buffer_size}')
 
                 if self.pause_started_at is not None:
-                    pause_time = (time.time_ns() - self.pause_started_at) * 1e-9
-                    self.playback_pauses.add(pause_time)
+                    #pause_time = (time.time_ns() - self.pause_started_at) * 1e-9
+                    pause_time = current_time - self.pause_started_at
+                    self.playback_pauses.add(current_time, pause_time)
                     self.pause_started_at = None
             else:
                 self.pauses_number += 1
-                self.pause_started_at = time.time_ns()
-                self.playback.add(0)
+                #self.pause_started_at = time.time_ns()
+                self.pause_started_at = current_time
+                self.playback.add(current_time, 0)
 
             #update buffer_size
             buffer_size = len(self.buffer) - self.buffer_played
             self.lock.release()
 
             if (not threading.main_thread().is_alive() or self.kill_playback_thread) and buffer_size <= 0:
-                print(f'thread {threading.get_ident()} will be killed.')
+                print(f'{current_time}  thread {threading.get_ident()} will be killed.')
                 break
 
             #playback steps
-            print(f'player vai dormir {time.time()}')
+            #print(f'{current_time} player vai dormir')
             time.sleep(self.playback_step)
 
 
@@ -160,7 +167,7 @@ class Player(Simple_Module):
         if self.buffer_initialization and self.get_amount_of_video_to_play() >= self.buffering_until:
             self.buffer_initialization = False
             self.playback_thread.start()
-            print('> buffering process is concluded')
+            print(f'{self.get_current_time()} buffering process is concluded')
             # start the process to play the video
 
         #if not self.buffer_initialization and self.get_amount_of_video_to_play() > 0:
@@ -200,6 +207,13 @@ class Player(Simple_Module):
         self.send_down(xml_request)
 
     def finalization(self):
+
+        self.log(self.playback_qi, 'playback_qi')
+        self.log(self.playback_quality_qi, 'playback_quality_qi')
+        self.log(self.playback_pauses, 'playback_pauses')
+        self.log(self.playback, 'playback')
+        self.log(self.playback_buffer_size, 'playback_buffer_size')
+
         print('>>>>>>>>>>>> Terminando!!!!')
         pass
 
@@ -215,18 +229,19 @@ class Player(Simple_Module):
         # set status to not downloading a segment
         self.already_downloading = False
 
-        print(f'> received: {msg}')
+        current_time     = self.get_current_time()
+        print(f'{current_time} > received: {msg}')
 
         if msg.found():
             self.buffering_video_segment(msg)
 
             #for statistical purpose
             amount_of_video = self.get_amount_of_video_to_play()
-            self.playback_buffer_size.add(amount_of_video)
+            self.playback_buffer_size.add(current_time, amount_of_video)
 
             #still have space in buffer to download next ss
             if amount_of_video >= self.max_buffer_size:
-                print('Maximum buffer size is achieved... the principal process will sleep now.')
+                print(f'{current_time} Maximum buffer size is achieved... the principal process will sleep now.')
                 self.player_thread_events.wait()
 
             self.request_next_segment()
@@ -240,11 +255,13 @@ class Player(Simple_Module):
                 self.playback_thread.join()
             '''
         else:
-            print('All video\'s segments was downloaded')
+            print(f'{current_time} All video\'s segments was downloaded')
             self.kill_playback_thread = True
-            self.playback_thread.join()
+            if self.playback_thread.is_alive():
+                self.playback_thread.join()
 
-
+    def log(self, log, file_name):
+        print(f'{file_name} {log}')
 
     def handle_xml_request(self, msg):
         pass
