@@ -6,6 +6,8 @@ from base.configuration_parser import Configuration_Parser
 from player.parser import *
 import threading
 import time
+import numpy as np
+from matplotlib import pyplot as plt
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -129,7 +131,7 @@ class Player(Simple_Module):
 
                 buffer_size = len(self.buffer) - self.buffer_played
                 self.playback_buffer_size.add(current_time, buffer_size)
-                print(f'{current_time} buffer size: {buffer_size}')
+                print(f'Simulation Time {current_time} > buffer size: {buffer_size}')
 
                 if self.pause_started_at is not None:
                     #pause_time = (time.time_ns() - self.pause_started_at) * 1e-9
@@ -147,7 +149,7 @@ class Player(Simple_Module):
             self.lock.release()
 
             if (not threading.main_thread().is_alive() or self.kill_playback_thread) and buffer_size <= 0:
-                print(f'{current_time}  thread {threading.get_ident()} will be killed.')
+                print(f'Simulation Time {current_time}  thread {threading.get_ident()} will be killed.')
                 break
 
             #playback steps
@@ -167,7 +169,7 @@ class Player(Simple_Module):
         if self.buffer_initialization and self.get_amount_of_video_to_play() >= self.buffering_until:
             self.buffer_initialization = False
             self.playback_thread.start()
-            print(f'{self.get_current_time()} buffering process is concluded')
+            print(f'Simulation Time {self.get_current_time()} buffering process is concluded')
             # start the process to play the video
 
         #if not self.buffer_initialization and self.get_amount_of_video_to_play() > 0:
@@ -208,13 +210,11 @@ class Player(Simple_Module):
 
     def finalization(self):
 
-        self.log(self.playback_qi, 'playback_qi')
-        self.log(self.playback_quality_qi, 'playback_quality_qi')
-        self.log(self.playback_pauses, 'playback_pauses')
-        self.log(self.playback, 'playback')
-        self.log(self.playback_buffer_size, 'playback_buffer_size')
-
-        print('>>>>>>>>>>>> Terminando!!!!')
+        self.log(self.playback_quality_qi, 'playback_quality_qi', 'Quality QI', 'bps')
+        self.log(self.playback_pauses, 'playback_pauses', 'Pauses Number',  'number')
+        self.log(self.playback, 'playback', 'Playback History', 'on/off')
+        self.log(self.playback_qi, 'playback_qi', 'Quality Index', 'QI')
+        self.log(self.playback_buffer_size, 'playback_buffer_size', 'Buffer Size', 'seconds')
         pass
 
 
@@ -230,7 +230,7 @@ class Player(Simple_Module):
         self.already_downloading = False
 
         current_time     = self.get_current_time()
-        print(f'{current_time} > received: {msg}')
+        print(f'Simulation Time {current_time} > received: {msg}')
 
         if msg.found():
             self.buffering_video_segment(msg)
@@ -241,7 +241,7 @@ class Player(Simple_Module):
 
             #still have space in buffer to download next ss
             if amount_of_video >= self.max_buffer_size:
-                print(f'{current_time} Maximum buffer size is achieved... the principal process will sleep now.')
+                print(f'Simulation Time {current_time} Maximum buffer size is achieved... the principal process will sleep now.')
                 self.player_thread_events.wait()
 
             self.request_next_segment()
@@ -255,16 +255,36 @@ class Player(Simple_Module):
                 self.playback_thread.join()
             '''
         else:
-            print(f'{current_time} All video\'s segments was downloaded')
+            print(f'Simulation Time {current_time} All video\'s segments was downloaded')
             self.kill_playback_thread = True
             if self.playback_thread.is_alive():
                 self.playback_thread.join()
 
-    def log(self, log, file_name):
-        print(f'{file_name} {log}')
+    def log(self, log, file_name, title, y_axis, x_axis = 'time (s)'):
+        items = log.items
+
+        if len(items) == 0:
+            return
+
+        x = []
+        y = []
+        for i in range(len(items)):
+            x.append(items[i][0])
+            y.append(items[i][1])
+
+        plt.plot(x, y, label=file_name)
+        plt.xlabel(x_axis)
+        plt.ylabel(y_axis)
+        plt.title(title)
+
+        plt.savefig(f'./results/{file_name}.png')
+        plt.close()
+
 
     def handle_xml_request(self, msg):
+        #not applied
         pass
 
     def handle_segment_size_request(self, msg):
+        #not applied
         pass

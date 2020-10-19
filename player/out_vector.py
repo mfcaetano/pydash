@@ -6,7 +6,8 @@ class Out_Vector:
         self.items = []
 
     def add(self, t, item):
-        self.items.append((t, item))
+        self.items.append([t, item])
 
     def __str__(self):
         return self.items.__str__()
+
