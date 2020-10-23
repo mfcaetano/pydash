@@ -1,8 +1,8 @@
 
-from player.out_vector import Out_Vector
-from base.simple_module import Simple_Module
+from player.out_vector import OutVector
+from base.simple_module import SimpleModule
 from base.message import *
-from base.configuration_parser import Configuration_Parser
+from base.configuration_parser import ConfigurationParser
 from player.parser import *
 import threading
 import time
@@ -19,12 +19,12 @@ Player is a Singleton class implementation
 '''
 
 
-class Player(Simple_Module):
+class Player(SimpleModule):
 
     def __init__(self, id):
-        Simple_Module.__init__(self, id)
+        SimpleModule.__init__(self, id)
 
-        config_parser = Configuration_Parser.get_instance()
+        config_parser = ConfigurationParser.get_instance()
 
         self.buffering_until = int(config_parser.get_parameter('buffering_until'))
         self.max_buffer_size = int(config_parser.get_parameter('max_buffer_size'))
@@ -67,11 +67,11 @@ class Player(Simple_Module):
         self.started_time = time.perf_counter()
         self.lock.release()
 
-        self.playback_qi = Out_Vector()
-        self.playback_quality_qi = Out_Vector()
-        self.playback_pauses = Out_Vector()
-        self.playback = Out_Vector()
-        self.playback_buffer_size = Out_Vector()
+        self.playback_qi = OutVector()
+        self.playback_quality_qi = OutVector()
+        self.playback_pauses = OutVector()
+        self.playback = OutVector()
+        self.playback_buffer_size = OutVector()
 
     def get_qi(self, quality_qi):
         return self.qi.index(quality_qi)
@@ -186,7 +186,7 @@ class Player(Simple_Module):
         if self.already_downloading:
             raise ValueError('Something doesn\'t look right, a segment is already being downloaded!')
 
-        segment_request = SS_Message(Message_Kind.SEGMENT_REQUEST)
+        segment_request = SSMessage(MessageKind.SEGMENT_REQUEST)
 
         url_tokens = self.url_mpd.split('/')
 
@@ -205,7 +205,7 @@ class Player(Simple_Module):
 
     def initialize(self):
         #starting the application downloading mdp file
-        xml_request = Message(Message_Kind.XML_REQUEST, self.url_mpd)
+        xml_request = Message(MessageKind.XML_REQUEST, self.url_mpd)
         self.send_down(xml_request)
 
     def finalization(self):

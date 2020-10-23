@@ -4,6 +4,7 @@ The Scheduler is a Singleton class implementation
 
 from base.singleton import Singleton
 
+
 class Scheduler(metaclass=Singleton):
 
     def __init__(self):
@@ -17,4 +18,3 @@ class Scheduler(metaclass=Singleton):
 
     def is_empty(self):
         return bool(self.events == [])
-

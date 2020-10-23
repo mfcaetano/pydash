@@ -1,6 +1,6 @@
 
 
-class Scheduler_Event:
+class SchedulerEvent:
 
     def __init__(self, msg, src, dst):
         self.origin = src

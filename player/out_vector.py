@@ -1,6 +1,6 @@
 import datetime
 
-class Out_Vector:
+class OutVector:
 
     def __init__(self):
         self.items = []

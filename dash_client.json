@@ -2,7 +2,6 @@
     "buffering_until": 5,
     "max_buffer_size": 60,
     "playbak_step": 1,
-    "url_mpd" : "http://workbird.cic.unb.br/datasets/DASHDatasetTest/BigBuckBunny/1sec/bunny_46980bps/BigBuckBunny_1s_simple_2014_05_09.mpd",
-    "url_mpd2" : "http://workbird.cic.unb.br/datasets/DASHDataset2014/BigBuckBunny/1sec/BigBuckBunny_1s_simple_2014_05_09.mpd",
-    "r2a_algorithm": "R2A_Fixed"
+    "url_mpd" : "http://workbird.cic.unb.br/datasets/DASHDataset2014/BigBuckBunny/1sec/BigBuckBunny_1s_simple_2014_05_09.mpd",
+    "r2a_algorithm": "R2AFixed"
 }

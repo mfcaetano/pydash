@@ -3,14 +3,14 @@ import importlib
 import r2a
 from player.player import Player
 from base.scheduler import Scheduler
-from connection.connection_handler import Connection_Handler
-from base.configuration_parser import Configuration_Parser
+from connection.connection_handler import ConnectionHandler
+from base.configuration_parser import ConfigurationParser
 
 
-class Dash_Client:
+class DashClient:
 
     def __init__(self):
-        config_parser = Configuration_Parser.get_instance()
+        config_parser = ConfigurationParser.get_instance()
 
         r2a_algorithm = str(config_parser.get_parameter('r2a_algorithm'))
 
@@ -25,7 +25,7 @@ class Dash_Client:
         r2a_class = getattr(importlib.import_module('r2a.' + r2a_algorithm.lower()), r2a_algorithm)
         self.r2a = r2a_class(1)
 
-        self.connection_handler = Connection_Handler(2)
+        self.connection_handler = ConnectionHandler(2)
 
         self.modules.append(self.player)
         self.modules.append(self.r2a)
