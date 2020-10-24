@@ -22,7 +22,7 @@ class R2AFixed(IR2A):
 
     def handle_segment_size_request(self, msg):
         # Hora de definir qual qualidade será escolhida
-        msg.add_quality_id(self.qi[19])
+        msg.add_quality_id(self.qi[0])
 
         self.send_down(msg)
 

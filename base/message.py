@@ -77,7 +77,7 @@ class SSMessage(Message):
     def get_quality_id(self):
         return self.quality_id
 
-    def set_found(self, status):
+    def set_found(self, status=True):
         self.__found = status
 
     def found(self):
