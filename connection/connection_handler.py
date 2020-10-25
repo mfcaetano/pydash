@@ -5,7 +5,9 @@ from player.parser import *
 import http.client
 import time
 from scipy.stats import expon
+from base.timer import Timer
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 """
 The ConnectionHandler is a Singleton class implementation
@@ -19,16 +21,23 @@ class ConnectionHandler(SimpleModule):
         self.rtt_length = []
         self.initial_time = 0
 
-        #for traffic shaping
+        # for traffic shaping
         config_parser = ConfigurationParser.get_instance()
         self.traffic_shaping_interval = int(config_parser.get_parameter('traffic_shaping_profile_interval'))
-        self.traffic_shaping_seed     = int(config_parser.get_parameter('traffic_shaping_seed'))
-        self.traffic_shaping_values   = []
+        self.traffic_shaping_seed = int(config_parser.get_parameter('traffic_shaping_seed'))
+        self.traffic_shaping_values = []
+
+        # mark the current traffic shapping interval
+        self.current_traffic_shaping_interval = 0
+
         self.traffic_shaping_sequence = []
+        # traffic shaping sequence position
+        self.tss_position = 0
+        # traffic shaping values position
+        self.tsv_position = 0
 
         token = config_parser.get_parameter('traffic_shaping_profile_sequence')
         for i in range(len(token)):
-
             if token[i] == 'L':
                 self.traffic_shaping_sequence.append(0)
             elif token[i] == 'M':
@@ -36,6 +45,18 @@ class ConnectionHandler(SimpleModule):
             elif token[i] == 'H':
                 self.traffic_shaping_sequence.append(2)
 
+        self.timer = Timer.get_instance()
+
+    def get_traffic_shaping_positions(self):
+        current_tsi = self.timer.get_current_time() // self.traffic_shaping_interval
+
+        if current_tsi > self.current_traffic_shaping_interval:
+            self.current_traffic_shaping_interval = current_tsi
+            self.tss_position = (self.tss_position + 1) % len(self.traffic_shaping_sequence)
+
+        self.tsv_position = (self.tsv_position + 1) % len(self.traffic_shaping_values[0])
+
+        return (self.tss_position, self.tsv_position)
 
     def initialize(self):
         # self.send_down(Message(MessageKind.SEGMENT_REQUEST, 'Olá Mundo'))
@@ -46,24 +67,29 @@ class ConnectionHandler(SimpleModule):
         if package_size == 0:
             return
 
-        target_throughput = 10000
+        tsp = self.get_traffic_shaping_positions()
+        target_throughput = self.traffic_shaping_values[tsp[0]][tsp[1]]
+
+        print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - profile: {tsp}')
+
         spent_time = time.perf_counter() - self.initial_time
         throughput = package_size / spent_time
 
-        #we didn't pass our throughput go
+        # we didn't pass our throughput go
         if target_throughput >= throughput:
             return
 
-        waiting_time = (package_size - target_throughput * spent_time) /  target_throughput
+        waiting_time = (package_size - target_throughput * spent_time) / target_throughput
         time.sleep(waiting_time)
 
     def finalization(self):
         pass
-#        print("Measurements at Connection Handler Level: ")
-#        print(self.rtt_length)
-#        print("Measured throughput")
-#        for i in self.rtt_length:
-#            print(f'{round(i[1]/i[0]):>10} bps')
+
+    #        print("Measurements at Connection Handler Level: ")
+    #        print(self.rtt_length)
+    #        print("Measured throughput")
+    #        for i in self.rtt_length:
+    #            print(f'{round(i[1]/i[0]):>10} bps')
 
     def handle_xml_request(self, msg):
         if not 'http://' in msg.get_payload():
@@ -97,13 +123,16 @@ class ConnectionHandler(SimpleModule):
         qi = parsed_mpd.get_qi()
 
         increase_factor = 1
-        low    = round(qi[len(qi)-1] * increase_factor)
-        medium = round(qi[(len(qi)//2)-1] * increase_factor)
-        high   = round(qi[0] * increase_factor)
+        low = round(qi[len(qi) - 1] * increase_factor)
+        medium = round(qi[(len(qi) // 2) - 1] * increase_factor)
+        high = round(qi[0] * increase_factor)
 
-        self.traffic_shaping_values.append([round(x) for x in expon.rvs(scale=1,loc=low,size=10,random_state=self.traffic_shaping_seed)])
-        self.traffic_shaping_values.append([round(x) for x in expon.rvs(scale=1,loc=medium,size=10,random_state=self.traffic_shaping_seed)])
-        self.traffic_shaping_values.append([round(x) for x in expon.rvs(scale=1,loc=high,size=10,random_state=self.traffic_shaping_seed)])
+        self.traffic_shaping_values.append(
+            expon.rvs(scale=1, loc=low, size=1000, random_state=self.traffic_shaping_seed))
+        self.traffic_shaping_values.append(
+            expon.rvs(scale=1, loc=medium, size=1000, random_state=self.traffic_shaping_seed))
+        self.traffic_shaping_values.append(
+            expon.rvs(scale=1, loc=high, size=1000, random_state=self.traffic_shaping_seed))
 
         self.send_up(msg)
 
@@ -133,7 +162,7 @@ class ConnectionHandler(SimpleModule):
             ss_file = ss_file.decode()
         except UnicodeDecodeError:
             # if wasn't possible to decode() is a ss
-            msg.add_bit_length(8*len(ss_file))
+            msg.add_bit_length(8 * len(ss_file))
             self.bandwidth_limitation(msg.get_bit_length())
             decoded = True
 

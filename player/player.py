@@ -4,10 +4,13 @@ from base.simple_module import SimpleModule
 from base.message import *
 from base.configuration_parser import ConfigurationParser
 from player.parser import *
+from base.timer import Timer
 import threading
 import time
 import numpy as np
 from matplotlib import pyplot as plt
+import os
+import glob
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -56,16 +59,13 @@ class Player(SimpleModule):
         self.parsed_mpd = ''
         self.qi         = []
 
+        self.timer = Timer.get_instance()
+
         #threading playback
         self.playback_thread = threading.Thread(target=self.handle_video_playback)
         self.player_thread_events = threading.Event()
         self.lock = threading.Lock()
         self.kill_playback_thread = False
-
-        # for the statistics purpose
-        self.lock.acquire()
-        self.started_time = time.perf_counter()
-        self.lock.release()
 
         self.request_time = 0
 
@@ -79,8 +79,6 @@ class Player(SimpleModule):
     def get_qi(self, quality_qi):
         return self.qi.index(quality_qi)
 
-    def get_current_time(self):
-        return round(time.perf_counter() - self.started_time, 6)
 
     # data for r2a algorithms
     #def get_playback_history(self):
@@ -112,7 +110,7 @@ class Player(SimpleModule):
     def handle_video_playback(self):
         while True:
             self.lock.acquire()
-            current_time = self.get_current_time()
+            current_time = self.timer.get_current_time()
             buffer_size  = len(self.buffer) - self.buffer_played
             #print(f'{current_time} player acordou')
 
@@ -134,7 +132,7 @@ class Player(SimpleModule):
 
                 buffer_size = len(self.buffer) - self.buffer_played
                 self.playback_buffer_size.add(current_time, buffer_size)
-                print(f'Current Execution Time {current_time} > buffer size: {buffer_size}')
+                print(f'Execution Time {current_time} > buffer size: {buffer_size}')
 
                 if self.pause_started_at is not None:
                     #pause_time = (time.time_ns() - self.pause_started_at) * 1e-9
@@ -154,7 +152,7 @@ class Player(SimpleModule):
             self.lock.release()
 
             if (not threading.main_thread().is_alive() or self.kill_playback_thread) and buffer_size <= 0:
-                print(f'Current Execution Time {current_time}  thread {threading.get_ident()} will be killed.')
+                print(f'Execution Time {current_time}  thread {threading.get_ident()} will be killed.')
                 break
 
             #playback steps
@@ -172,14 +170,14 @@ class Player(SimpleModule):
         self.store_in_buffer(self.get_qi(msg.get_quality_id()), msg.get_segment_size())
 
         #statistical purpose
-        current_time = self.get_current_time()
+        current_time = self.timer.get_current_time()
         buffer_size = self.get_amount_of_video_to_play()
         self.playback_buffer_size.add(current_time, buffer_size)
-        print(f'Current Execution Time {current_time} > buffer size: {buffer_size}')
+        print(f'Execution Time {current_time} > buffer size: {buffer_size}')
 
         if self.buffer_initialization and self.get_amount_of_video_to_play() >= self.buffering_until:
             self.buffer_initialization = False
-            print(f'Current Execution Time {self.get_current_time()} buffering process is concluded')
+            print(f'Execution Time {self.timer.get_current_time()} buffering process is concluded')
             self.playback_thread.start()
             # start the process to play the video
 
@@ -197,7 +195,8 @@ class Player(SimpleModule):
         if self.already_downloading:
             raise ValueError('Something doesn\'t look right, a segment is already being downloaded!')
 
-        self.request_time = time.perf_counter()
+        self.request_time = round(time.perf_counter(), 6)
+        #self.request_time = self.timer.get_current_time()
         segment_request   = SSMessage(MessageKind.SEGMENT_REQUEST)
 
         url_tokens = self.url_mpd.split('/')
@@ -212,6 +211,8 @@ class Player(SimpleModule):
         #set status to downloading a segment
         self.already_downloading = True
 
+        print(f'Execution Time {self.request_time} > request: {segment_request}')
+
         self.send_down(segment_request)
 
 
@@ -223,6 +224,8 @@ class Player(SimpleModule):
     def finalization(self):
 
         print(f'Pauses number: {self.pauses_number}')
+
+        [os.remove(f) for f in glob.glob('./results/*.png')]
 
         self.logging_all_statistics()
 
@@ -238,16 +241,21 @@ class Player(SimpleModule):
         # set status to not downloading a segment
         self.already_downloading = False
 
-        current_time     = self.get_current_time()
-        print(f'Current Execution Time {current_time} > received: {msg}')
+        current_time     = self.timer.get_current_time()
+        print(f'Execution Time {current_time} > received: {msg}')
 
         if msg.found():
-            self.throughputs.add(current_time, msg.get_bit_length() /(time.perf_counter() - self.request_time))
+            measured_throughput = msg.get_bit_length() / (time.perf_counter() - self.request_time)
+            self.throughputs.add(current_time, measured_throughput)
+
+            print(f'Execution Time {self.timer.get_current_time()} > measured throughput: {measured_throughput}')
+
+            #self.throughputs.add(current_time, msg.get_bit_length() /(current_time - self.request_time))
             self.buffering_video_segment(msg)
 
             #still have space in buffer to download next ss
             if self.get_amount_of_video_to_play() >= self.max_buffer_size:
-                print(f'Current Execution Time {current_time} Maximum buffer size is achieved... the principal process will sleep now.')
+                print(f'Execution Time {current_time} Maximum buffer size is achieved... the principal process will sleep now.')
                 self.player_thread_events.wait()
 
             self.request_next_segment()
@@ -261,7 +269,7 @@ class Player(SimpleModule):
                 self.playback_thread.join()
             '''
         else:
-            print(f'Current Execution Time {current_time} All video\'s segments was downloaded')
+            print(f'Execution Time {current_time} All video\'s segments was downloaded')
             self.kill_playback_thread = True
             if self.playback_thread.is_alive():
                 self.playback_thread.join()
