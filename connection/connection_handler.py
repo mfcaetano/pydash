@@ -1,5 +1,5 @@
 from base.simple_module import SimpleModule
-from base.message import Message, MessageKind
+from base.message import Message, MessageKind, SSMessage
 from base.configuration_parser import ConfigurationParser
 from player.parser import *
 import http.client
@@ -20,6 +20,7 @@ class ConnectionHandler(SimpleModule):
         SimpleModule.__init__(self, id)
         self.rtt_length = []
         self.initial_time = 0
+        self.qi = []
 
         # for traffic shaping
         config_parser = ConfigurationParser.get_instance()
@@ -120,12 +121,12 @@ class ConnectionHandler(SimpleModule):
         self.rtt_length.append([round(time.perf_counter() - self.initial_time, 6), msg.get_bit_length()])
 
         parsed_mpd = parse_mpd(msg.get_payload())
-        qi = parsed_mpd.get_qi()
+        self.qi = parsed_mpd.get_qi()
 
         increase_factor = 1
-        low = round(qi[len(qi) - 1] * increase_factor)
-        medium = round(qi[(len(qi) // 2) - 1] * increase_factor)
-        high = round(qi[0] * increase_factor)
+        low = round(self.qi[len(self.qi) - 1] * increase_factor)
+        medium = round(self.qi[(len(self.qi) // 2) - 1] * increase_factor)
+        high = round(self.qi[0] * increase_factor)
 
         self.traffic_shaping_values.append(
             expon.rvs(scale=1, loc=low, size=1000, random_state=self.traffic_shaping_seed))
@@ -142,6 +143,8 @@ class ConnectionHandler(SimpleModule):
         path_name = msg.get_url()
         ss_file = ''
         self.initial_time = time.perf_counter()
+
+        print(f'Execution Time {self.timer.get_current_time()} > selected QI: {self.qi.index(msg.get_quality_id())}')
 
         try:
             connection = http.client.HTTPConnection(host_name, port)

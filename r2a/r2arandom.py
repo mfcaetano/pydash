@@ -1,9 +1,10 @@
 from r2a.ir2a import IR2A
 from base.message import Message, MessageKind
 from player.parser import *
+import random
 
 
-class R2AFixed(IR2A):
+class R2ARandom(IR2A):
 
     def __init__(self, id):
         IR2A.__init__(self, id)
@@ -21,8 +22,12 @@ class R2AFixed(IR2A):
         self.send_up(msg)
 
     def handle_segment_size_request(self, msg):
+
+        #random choosing approach
+        qi_id = random.randint(0, len(self.qi)-1)
+
         # Hora de definir qual qualidade será escolhida
-        msg.add_quality_id(self.qi[19])
+        msg.add_quality_id(self.qi[qi_id])
 
         self.send_down(msg)
 
