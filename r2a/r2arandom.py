@@ -32,6 +32,9 @@ class R2ARandom(IR2A):
         self.send_down(msg)
 
     def handle_segment_size_response(self, msg):
+
+
+
         self.send_up(msg)
 
     def initialize(self):

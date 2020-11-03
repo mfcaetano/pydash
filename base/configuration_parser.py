@@ -1,4 +1,8 @@
-from base.singleton import Singleton
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br)
+
+@description: PyDash Project
+"""
 import json
 
 
