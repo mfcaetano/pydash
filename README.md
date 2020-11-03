@@ -1,2 +1,2 @@
 # dash
-Dash Project
+Python Dash Project
