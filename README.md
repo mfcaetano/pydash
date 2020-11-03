@@ -5,7 +5,6 @@ A Python Dash Project.
 
 Para a utilização deste projeto é necessária a instalação dos seguintes pacotes python.
 
-> numpy
-> matplotlib
-> scipy
-> seaborn
+```
+pip3 install numpy matplotlib scipy seaborn
+```
