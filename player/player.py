@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 @author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
 
@@ -8,18 +9,19 @@ segments requests to the lower layers. The Payer stores
 the received segments in the buffer to be consumed later.
 Also "watches" the movie and compute the statistics.
 """
-from player.out_vector import OutVector
-from base.simple_module import SimpleModule
-from base.message import *
-from base.configuration_parser import ConfigurationParser
-from player.parser import *
-from base.timer import Timer
+import glob
+import os
 import threading
 import time
-import numpy as np
 from matplotlib import pyplot as plt
-import os
-import glob
+
+from base.configuration_parser import ConfigurationParser
+from base.message import *
+from base.simple_module import SimpleModule
+from base.timer import Timer
+from player.out_vector import OutVector
+from player.parser import *
+from base.whiteboard import Whiteboard
 
 '''
 quality_id - Taxa em que o video foi codificado (46980bps, ..., 4726737bps) 
@@ -83,7 +85,10 @@ class Player(SimpleModule):
         self.playback_pauses = OutVector()
         self.playback = OutVector()
         self.playback_buffer_size = OutVector()
-        self.throughputs = OutVector()
+        self.throughput = OutVector()
+
+        self.whiteboard = Whiteboard.get_instance()
+        self.whiteboard.add_playback_history(self.playback)
 
     def get_qi(self, quality_qi):
         return self.qi.index(quality_qi)
@@ -255,11 +260,11 @@ class Player(SimpleModule):
 
         if msg.found():
             measured_throughput = msg.get_bit_length() / (time.perf_counter() - self.request_time)
-            self.throughputs.add(current_time, measured_throughput)
+            self.throughput.add(current_time, measured_throughput)
 
             print(f'Execution Time {self.timer.get_current_time()} > measured throughput: {measured_throughput}')
 
-            #self.throughputs.add(current_time, msg.get_bit_length() /(current_time - self.request_time))
+            #self.throughput.add(current_time, msg.get_bit_length() /(current_time - self.request_time))
             self.buffering_video_segment(msg)
 
             #still have space in buffer to download next ss
@@ -289,7 +294,7 @@ class Player(SimpleModule):
         self.log(self.playback, 'playback', 'Playback History', 'on/off')
         self.log(self.playback_qi, 'playback_qi', 'Quality Index', 'QI')
         self.log(self.playback_buffer_size, 'playback_buffer_size', 'Buffer Size', 'seconds')
-        self.log(self.throughputs, 'throughputs', 'Throughput Variation', 'bps')
+        self.log(self.throughput, 'throughput', 'Throughput Variation', 'bps')
 
     def log(self, log, file_name, title, y_axis, x_axis = 'execution time (s)'):
         items = log.items

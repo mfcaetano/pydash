@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 @author: Marcos F. Caetano (mfcaetano@unb.br) 03/11/2020
 
@@ -12,12 +13,16 @@ It is necessary to implement all the @abstractmethod methods to generate a new R
 from base.simple_module import SimpleModule
 from abc import ABCMeta, abstractmethod
 from base.message import Message, MessageKind
+from base.whiteboard import Whiteboard
 
 
 class IR2A(SimpleModule):
 
     def __init__(self, id):
         SimpleModule.__init__(self, id)
+
+        # Whiteboard object to change statistical information between Player and R2A algorithm
+        self.whiteboard = Whiteboard.get_instance()
 
     @abstractmethod
     def handle_xml_request(self, msg):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 @author: Marcos F. Caetano (mfcaetano@unb.br) 03/11/2020
 
@@ -40,6 +41,8 @@ class R2ARandom(IR2A):
 
         #random choosing approach
         qi_id = random.randint(0, len(self.qi)-1)
+
+        #self.whiteboard.get_playback_history()}
 
         # Hora de definir qual qualidade será escolhida
         msg.add_quality_id(self.qi[qi_id])

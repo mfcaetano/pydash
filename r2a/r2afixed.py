@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 @author: Marcos F. Caetano (mfcaetano@unb.br) 03/11/2020
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 @author: Matheus Stauffer (matheusvostauffer@gmail.com) 10/06/2020
 
