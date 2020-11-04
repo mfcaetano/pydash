@@ -1,7 +1,10 @@
 """
-The Scheduler is a Singleton class implementation
-"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
 
+@description: PyDash Project
+
+A Global timer reference used by all classes.
+"""
 import time
 
 

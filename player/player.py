@@ -1,4 +1,13 @@
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
 
+@description: PyDash Project
+
+This is the player representation. It has the buffer and submit
+segments requests to the lower layers. The Payer stores
+the received segments in the buffer to be consumed later.
+Also "watches" the movie and compute the statistics.
+"""
 from player.out_vector import OutVector
 from base.simple_module import SimpleModule
 from base.message import *

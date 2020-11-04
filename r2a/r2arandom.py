@@ -1,7 +1,22 @@
-from r2a.ir2a import IR2A
-from base.message import Message, MessageKind
-from player.parser import *
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 03/11/2020
+
+@description: PyDash Project
+
+An implementation example of a Random R2A Algorithm.
+
+The quality list is obtained with the parameter of handle_xml_response()
+method and the choice is made inside of handle_segment_size_request(),
+before sending the message down.
+
+In this algorithm the quality choice is made randomly.
+"""
+
+
 import random
+
+from player.parser import *
+from r2a.ir2a import IR2A
 
 
 class R2ARandom(IR2A):

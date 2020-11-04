@@ -1,10 +1,21 @@
-import json
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
+
+@description: PyDash Project
+
+Dash client representation. It knows all entities in our
+layer model (Player, R2A and Connection_Handler).
+There isn't a strong relation among the entities
+(they don't know each other). The Dash_client is
+responsible to make the communication among them happens.
+"""
+
 import importlib
-import r2a
-from player.player import Player
+
+from base.configuration_parser import ConfigurationParser
 from base.scheduler import Scheduler
 from connection.connection_handler import ConnectionHandler
-from base.configuration_parser import ConfigurationParser
+from player.player import Player
 
 
 class DashClient:

@@ -1,7 +1,14 @@
-#import xml.etree.ElementTree as ET
+"""
+@author: Matheus Stauffer (matheusvostauffer@gmail.com) 10/06/2020
+
+@description: PyDash Project
+
+A mpd parser implementation to store and extract MDP information used
+during the simulation
+"""
+
 from xml.etree.ElementTree import fromstring, ElementTree
 
-# class to struct informations extracted by parser_mpd function.
 class mpd_node:
     def __init__(self):
         self.mpd_dict = {}

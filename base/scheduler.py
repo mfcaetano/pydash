@@ -1,4 +1,8 @@
 """
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
+
+@description: PyDash Project
+
 The Scheduler is a Singleton class implementation
 """
 

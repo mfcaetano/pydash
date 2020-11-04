@@ -1,10 +1,19 @@
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 03/11/2020
+
+@description: PyDash Project
+
+Abstract Class for R2A (Rate Adaptation Algorithms) implementations
+
+It is necessary to implement all the @abstractmethod methods to generate a new R2A Algorithm implementation
+
+"""
+
 from base.simple_module import SimpleModule
 from abc import ABCMeta, abstractmethod
 from base.message import Message, MessageKind
-'''
-Abstract Class for R2A Implementations
-Rate Adaptation Algorithms
-'''
+
+
 class IR2A(SimpleModule):
 
     def __init__(self, id):
@@ -35,4 +44,3 @@ class IR2A(SimpleModule):
     def finalization(self):
         SimpleModule.finalization(self)
         pass
-

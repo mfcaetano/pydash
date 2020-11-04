@@ -1,8 +1,12 @@
-'''
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
+
+@description: PyDash Project
+
 Abstract Class for Simple Module Implementation.
 
 Class implements basic functionality to be called by the main program.
-'''
+"""
 
 from abc import ABCMeta, abstractmethod
 from base.scheduler import Scheduler

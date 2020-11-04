@@ -1,3 +1,9 @@
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
+
+@description: PyDash Project
+"""
+
 from enum import Enum
 
 

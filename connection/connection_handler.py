@@ -1,3 +1,14 @@
+"""
+@author: Marcos F. Caetano (mfcaetano@unb.br) 11/03/2020
+
+@description: PyDash Project
+
+The ConnectionHandler is a Singleton class implementation
+
+The class responsible to retrieve segments in the web server.
+Also it implements a traffic shaping approach.
+"""
+
 from base.simple_module import SimpleModule
 from base.message import Message, MessageKind, SSMessage
 from base.configuration_parser import ConfigurationParser
@@ -8,10 +19,6 @@ from scipy.stats import expon
 from base.timer import Timer
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-"""
-The ConnectionHandler is a Singleton class implementation
-"""
 
 
 class ConnectionHandler(SimpleModule):
