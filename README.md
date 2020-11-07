@@ -46,5 +46,9 @@ Pronto! Para testar o código, basta executar:
 python3 main.py
 ```
 
+# Arquitetura 
+
+
+
 
 
