@@ -50,5 +50,9 @@ python3 main.py
 
 ![Arquitetura](https://user-images.githubusercontent.com/4336448/98450304-85a54800-211a-11eb-93f7-fd4e60c46ed5.png)
 
+![Arquitetura_Servidor](https://user-images.githubusercontent.com/4336448/98450354-ea60a280-211a-11eb-9fd9-1f7e1ddc1f9c.png)
+
+![Arquitetura_Cliente](https://user-images.githubusercontent.com/4336448/98450355-ec2a6600-211a-11eb-9845-298b51f9801e.png)
+
 
 
