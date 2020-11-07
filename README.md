@@ -48,7 +48,7 @@ python3 main.py
 
 # Arquitetura 
 
-
+![Arquitetura](https://user-images.githubusercontent.com/4336448/98450304-85a54800-211a-11eb-93f7-fd4e60c46ed5.png)
 
 
 
