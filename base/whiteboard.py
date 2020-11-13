@@ -27,6 +27,10 @@ class Whiteboard:
             self.playback_qi = []
             self.playback_pauses = []
             self.playback_buffer_size = []
+            self.max_buffer_size = 0
+
+    def add_max_buffer_size(self, max_buffer_size):
+        self.max_buffer_size = max_buffer_size
 
     def add_playback_qi(self, playback_qi):
         self.playback_qi = playback_qi
@@ -39,6 +43,12 @@ class Whiteboard:
 
     def add_playback_history(self, playback):
         self.playback = playback
+
+    def get_max_buffer_size(self):
+        """
+        Returns the maximum buffer size. The download will stop after this amount will be achieved
+        """
+        return self.max_buffer_size
 
     def get_playback_qi(self):
         """
