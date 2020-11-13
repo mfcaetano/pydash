@@ -94,11 +94,6 @@ class Player(SimpleModule):
     def get_qi(self, quality_qi):
         return self.qi.index(quality_qi)
 
-
-    # data for r2a algorithms
-    #def get_playback_history(self):
-    #    return self.playback_history
-
     def get_amount_of_video_to_play_without_lock(self):
         video_data = len(self.buffer) - self.buffer_played
         self.whiteboard.add_amount_video_to_play(video_data)
@@ -216,8 +211,8 @@ class Player(SimpleModule):
         if self.already_downloading:
             raise ValueError('Something doesn\'t look right, a segment is already being downloaded!')
 
-        self.request_time = round(time.perf_counter(), 6)
-        #self.request_time = self.timer.get_current_time()
+        #self.request_time = round(time.perf_counter(), 6)
+        self.request_time = self.timer.get_current_time()
         segment_request   = SSMessage(MessageKind.SEGMENT_REQUEST)
 
         url_tokens = self.url_mpd.split('/')
