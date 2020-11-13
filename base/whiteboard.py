@@ -28,6 +28,10 @@ class Whiteboard:
             self.playback_pauses = []
             self.playback_buffer_size = []
             self.max_buffer_size = 0
+            self.amount_video_to_play = 0
+
+    def add_amount_video_to_play(self, amount_video_to_play):
+        self.amount_video_to_play = amount_video_to_play
 
     def add_max_buffer_size(self, max_buffer_size):
         self.max_buffer_size = max_buffer_size
@@ -43,6 +47,12 @@ class Whiteboard:
 
     def add_playback_history(self, playback):
         self.playback = playback
+
+    def get_amount_video_to_play(self):
+        """
+        It returns the total amount of video stored in the buffer that still will be played
+        """
+        return self.amount_video_to_play
 
     def get_max_buffer_size(self):
         """

@@ -99,10 +99,16 @@ class Player(SimpleModule):
     #def get_playback_history(self):
     #    return self.playback_history
 
+    def get_amount_of_video_to_play_without_lock(self):
+        video_data = len(self.buffer) - self.buffer_played
+        self.whiteboard.add_amount_video_to_play(video_data)
+        return video_data
+
     def get_amount_of_video_to_play(self):
         self.lock.acquire()
         video_data = len(self.buffer) - self.buffer_played
         self.lock.release()
+        self.whiteboard.add_amount_video_to_play(video_data)
         return video_data
 
     def is_there_something_to_play(self):
@@ -126,7 +132,7 @@ class Player(SimpleModule):
         while True:
             self.lock.acquire()
             current_time = self.timer.get_current_time()
-            buffer_size  = len(self.buffer) - self.buffer_played
+            buffer_size  = self.get_amount_of_video_to_play_without_lock()
             #print(f'{current_time} player acordou')
 
             #there is something to play
@@ -145,7 +151,7 @@ class Player(SimpleModule):
 
                     self.buffer_played += 1
 
-                buffer_size = len(self.buffer) - self.buffer_played
+                buffer_size = self.get_amount_of_video_to_play_without_lock()
                 self.playback_buffer_size.add(current_time, buffer_size)
                 print(f'Execution Time {current_time} > buffer size: {buffer_size}')
 
@@ -163,7 +169,7 @@ class Player(SimpleModule):
                     self.pause_started_at = current_time
 
             #update buffer_size
-            buffer_size = len(self.buffer) - self.buffer_played
+            buffer_size = self.get_amount_of_video_to_play_without_lock()
             self.lock.release()
 
             if (not threading.main_thread().is_alive() or self.kill_playback_thread) and buffer_size <= 0:
