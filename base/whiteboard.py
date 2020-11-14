@@ -23,12 +23,16 @@ class Whiteboard:
             raise Exception('This class is a singleton!')
         else:
             Whiteboard.__instance = self
+            self.buffer   = []
             self.playback = []
             self.playback_qi = []
             self.playback_pauses = []
             self.playback_buffer_size = []
             self.max_buffer_size = 0
             self.amount_video_to_play = 0
+
+    def add_buffer(self, buffer):
+        self.buffer = buffer
 
     def add_amount_video_to_play(self, amount_video_to_play):
         self.amount_video_to_play = amount_video_to_play
@@ -48,6 +52,9 @@ class Whiteboard:
     def add_playback_history(self, playback):
         self.playback = playback
 
+    def get_buffer(self):
+        return tuple(self.buffer)
+
     def get_amount_video_to_play(self):
         """
         It returns the total amount of video stored in the buffer that still will be played
@@ -65,7 +72,7 @@ class Whiteboard:
         It returns a tuples list of time and QI's segments already played by the Player.
         The time represents the moment when a QI segment was consumed (played) by the Player.
         """
-        return self.playback_qi
+        return tuple(self.playback_qi)
 
     def get_playback_pauses(self):
         """
@@ -73,14 +80,16 @@ class Whiteboard:
         the video. The time (s) represents the moment when a video pause occurred and
         the pauses represents the lenght of this pauses.
         """
-        return self.playback_pauses
+
+        return tuple(self.playback_pauses)
 
     def get_playback_buffer_size(self):
         """
         It returns a tuples list of time and buffer size during the playing video.
         The time represents the moment when the buffer size was measured.
         """
-        return self.playback_buffer_size
+
+        return tuple(self.playback_buffer_size)
 
 
     def get_playback_history(self):
@@ -90,4 +99,4 @@ class Whiteboard:
         to play or not the video. For playback, the number one means it was possible to
         play and zero is otherwise.
         """
-        return self.playback
+        return tuple(self.playback)

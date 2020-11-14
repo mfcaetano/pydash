@@ -88,11 +88,11 @@ class Player(SimpleModule):
         self.throughput = OutVector()
 
         self.whiteboard = Whiteboard.get_instance()
-        self.whiteboard.add_playback_history(self.playback)
-        self.whiteboard.add_playback_qi(self.playback_qi)
-        self.whiteboard.add_playback_pauses(self.playback_pauses)
-        self.whiteboard.add_playback_buffer_size(self.playback_buffer_size)
-
+        self.whiteboard.add_playback_history(self.playback.get_items())
+        self.whiteboard.add_playback_qi(self.playback_qi.get_items())
+        self.whiteboard.add_playback_pauses(self.playback_pauses.get_items())
+        self.whiteboard.add_playback_buffer_size(self.playback_buffer_size.get_items())
+        self.whiteboard.add_buffer(self.buffer)
 
 
         self.whiteboard.add_max_buffer_size(self.max_buffer_size)
