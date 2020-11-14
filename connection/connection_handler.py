@@ -77,9 +77,9 @@ class ConnectionHandler(SimpleModule):
             return
 
         tsp = self.get_traffic_shaping_positions()
-        target_throughput = self.traffic_shaping_values[tsp[0]][tsp[1]]
+        target_throughput = self.traffic_shaping_values[self.traffic_shaping_sequence[tsp[0]]][tsp[1]]
 
-        print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - profile: {tsp}')
+        print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - profile: ({self.traffic_shaping_sequence[tsp[0]]}, {tsp[1]})')
 
         spent_time = time.perf_counter() - self.initial_time
         throughput = package_size / spent_time
