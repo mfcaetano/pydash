@@ -23,3 +23,9 @@ class OutVector:
 
     def __str__(self):
         return self.items.__str__()
+
+    def __getitem__(self, key):
+        if len(self.items) == 0:
+            return []
+
+        return self.items[key]

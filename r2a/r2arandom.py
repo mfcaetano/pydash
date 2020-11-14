@@ -42,7 +42,11 @@ class R2ARandom(IR2A):
         #random choosing approach
         qi_id = random.randint(0, len(self.qi)-1)
 
-        #self.whiteboard.get_playback_history()}
+        print(self.whiteboard.get_playback_history())
+
+        #list = self.whiteboard.get_playback_history()
+        #if len(list) > 0:
+        #    print(f'>>>>>>>>>>> {list[0][1]}')
 
         # Hora de definir qual qualidade será escolhida
         msg.add_quality_id(self.qi[qi_id])

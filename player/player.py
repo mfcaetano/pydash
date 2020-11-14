@@ -89,6 +89,12 @@ class Player(SimpleModule):
 
         self.whiteboard = Whiteboard.get_instance()
         self.whiteboard.add_playback_history(self.playback)
+        self.whiteboard.add_playback_qi(self.playback_qi)
+        self.whiteboard.add_playback_pauses(self.playback_pauses)
+        self.whiteboard.add_playback_buffer_size(self.playback_buffer_size)
+
+
+
         self.whiteboard.add_max_buffer_size(self.max_buffer_size)
 
     def get_qi(self, quality_qi):
