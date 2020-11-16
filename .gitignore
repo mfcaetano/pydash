@@ -1,2 +1,7 @@
 /venv/
 /results/
+/__pycache__/
+/connection/__pycache__/
+/player/__pycache__/
+/base/__pycache__/
+/r2a/__pycache__/
