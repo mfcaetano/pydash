@@ -26,7 +26,7 @@ class ConnectionHandler(SimpleModule):
 
     def __init__(self, id):
         SimpleModule.__init__(self, id)
-        self.rtt_length = []
+        #self.rtt_length = []
         self.initial_time = 0
         self.qi = []
 
@@ -81,24 +81,19 @@ class ConnectionHandler(SimpleModule):
 
         print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - profile: ({self.traffic_shaping_sequence[tsp[0]]}, {tsp[1]})')
 
-        spent_time = time.perf_counter() - self.initial_time
-        throughput = package_size / spent_time
+        rtt = time.perf_counter() - self.initial_time
+        throughput = package_size / rtt
 
         # we didn't pass our throughput go
         if target_throughput >= throughput:
             return
 
-        waiting_time = (package_size - target_throughput * spent_time) / target_throughput
+        waiting_time = (package_size - (target_throughput * rtt)) / target_throughput
         time.sleep(waiting_time)
 
     def finalization(self):
         pass
 
-    #        print("Measurements at Connection Handler Level: ")
-    #        print(self.rtt_length)
-    #        print("Measured throughput")
-    #        for i in self.rtt_length:
-    #            print(f'{round(i[1]/i[0]):>10} bps')
 
     def handle_xml_request(self, msg):
         if not 'http://' in msg.get_payload():
@@ -126,7 +121,7 @@ class ConnectionHandler(SimpleModule):
         msg = Message(MessageKind.XML_RESPONSE, mdp_file)
         msg.add_bit_length(8 * len(mdp_file))
 
-        self.rtt_length.append([round(time.perf_counter() - self.initial_time, 6), msg.get_bit_length()])
+        #self.rtt_length.append([round(time.perf_counter() - self.initial_time, 6), msg.get_bit_length()])
 
         parsed_mpd = parse_mpd(msg.get_payload())
         self.qi = parsed_mpd.get_qi()
@@ -165,6 +160,7 @@ class ConnectionHandler(SimpleModule):
             print(err)
             exit(-1)
 
+
         msg.set_kind(MessageKind.SEGMENT_RESPONSE)
 
         decoded = False
@@ -180,7 +176,7 @@ class ConnectionHandler(SimpleModule):
         if not decoded and '404 Not Found' in ss_file:
             msg.set_found(False)
 
-        self.rtt_length.append([round(time.perf_counter() - self.initial_time, 6), msg.get_bit_length()])
+        #self.rtt_length.append([round(rtt_length, 6), msg.get_bit_length()])
 
         self.send_up(msg)
 

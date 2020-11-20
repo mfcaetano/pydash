@@ -216,8 +216,8 @@ class Player(SimpleModule):
         if self.already_downloading:
             raise ValueError('Something doesn\'t look right, a segment is already being downloaded!')
 
-        #self.request_time = round(time.perf_counter(), 6)
-        self.request_time = self.timer.get_current_time()
+        self.request_time = time.perf_counter()
+        #self.request_time = self.timer.get_current_time()
         segment_request   = SSMessage(MessageKind.SEGMENT_REQUEST)
 
         url_tokens = self.url_mpd.split('/')
@@ -232,7 +232,7 @@ class Player(SimpleModule):
         #set status to downloading a segment
         self.already_downloading = True
 
-        print(f'Execution Time {self.request_time} > request: {segment_request}')
+        print(f'Execution Time {self.timer.get_current_time()} > request: {segment_request}')
 
         self.send_down(segment_request)
 
