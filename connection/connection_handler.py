@@ -26,7 +26,6 @@ class ConnectionHandler(SimpleModule):
 
     def __init__(self, id):
         SimpleModule.__init__(self, id)
-        #self.rtt_length = []
         self.initial_time = 0
         self.qi = []
 
@@ -121,8 +120,6 @@ class ConnectionHandler(SimpleModule):
         msg = Message(MessageKind.XML_RESPONSE, mdp_file)
         msg.add_bit_length(8 * len(mdp_file))
 
-        #self.rtt_length.append([round(time.perf_counter() - self.initial_time, 6), msg.get_bit_length()])
-
         parsed_mpd = parse_mpd(msg.get_payload())
         self.qi = parsed_mpd.get_qi()
 
@@ -175,8 +172,6 @@ class ConnectionHandler(SimpleModule):
 
         if not decoded and '404 Not Found' in ss_file:
             msg.set_found(False)
-
-        #self.rtt_length.append([round(rtt_length, 6), msg.get_bit_length()])
 
         self.send_up(msg)
 
