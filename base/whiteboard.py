@@ -23,11 +23,14 @@ class Whiteboard:
             raise Exception('This class is a singleton!')
         else:
             Whiteboard.__instance = self
-            self.buffer   = []
+            self.buffer = []
             self.playback = []
             self.playback_qi = []
             self.playback_pauses = []
             self.playback_buffer_size = []
+            self.playback_segment_size_time_at_buffer = []
+            # partial segment size time at buffer list
+            self.partial_sstb = []
             self.max_buffer_size = 0
             self.amount_video_to_play = 0
 
@@ -51,6 +54,29 @@ class Whiteboard:
 
     def add_playback_history(self, playback):
         self.playback = playback
+
+    def add_playback_segment_size_time_at_buffer(self, segment_size_time_at_buffer):
+        self.playback_segment_size_time_at_buffer = segment_size_time_at_buffer
+
+    def get_playback_segment_size_time_at_buffer(self):
+        """
+        It returns a list of the time each segment size spends
+        in the buffer before was played by the player. The list
+        will increase over time. It is ordered from the oldest
+        segment until de newest one (from the begging until the
+        end of the reproduced video).
+        """
+        pos = 0
+
+        try:
+            pos = [x[1] for x in self.playback_segment_size_time_at_buffer].index(-1, max(len(self.partial_sstb)-1, 0))
+        except:
+            pos = len(self.playback_segment_size_time_at_buffer)
+
+        plist = [round(x[1] - x[0], 6) for x in self.playback_segment_size_time_at_buffer[len(self.partial_sstb):pos]]
+        self.partial_sstb = self.partial_sstb + plist
+
+        return tuple(self.partial_sstb)
 
     def get_buffer(self):
         return tuple(self.buffer)
@@ -90,7 +116,6 @@ class Whiteboard:
         """
 
         return tuple(self.playback_buffer_size)
-
 
     def get_playback_history(self):
         """
