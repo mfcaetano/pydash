@@ -84,9 +84,12 @@ class Pandas:
     def Q(self):
         rup = self.get_rup()
         rdown = self.get_rdown()
-        if(self.r[-1] < rup): return rup
-        elif(rup <= self.r[-1] and self.r[-1] <= rdown): return self.r[-1]
-        else: return rdown
+        self.deltaup = self.e * self.y[-1]
+        rn = 0
+        if(self.r[-1] < rup): rn = rup
+        elif(rup <= self.r[-1] and self.r[-1] <= rdown): rn = self.r[-1]
+        else: rn = rdown
+        self.r.append(rn)
 
     def get_rup(self):
         y = self.y[-1] - self.deltaup
@@ -115,6 +118,7 @@ class Pandas:
         self.put_trequest()
         self.get_rate()
         self.tr.append(self.tresponse - self.trequest)
+        self.z.append((self.r[-1]*self.t)/self.ta)
     
     def update_request(self):
         self.n += 1
