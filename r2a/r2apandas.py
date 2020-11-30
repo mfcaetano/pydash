@@ -77,7 +77,10 @@ class Pandas:
         self.x.append(xn)
     
     def estimate_rn(self):
-        pass
+        self.estimate_xn()
+        self.S()
+        self.Q()
+        return self.r[-1]
 
     def S(self):
         self.y.append(self.y[-1] - self.tr[-1] * self.alfa * (self.y[-1] - self.x[-1]))
