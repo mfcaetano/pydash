@@ -72,8 +72,9 @@ class Pandas:
         self.deltadown = deltadown   # margem de segurança para baixo
 
     def estimate_xn(self):
-
-        pass
+        m = max(0, self.x[-1]-self.z[-1]+self.w)
+        xn = self.x[-1] + self.k*self.tr[-1]*(self.w - m)
+        self.x.append(xn)
     
     def estimate_rn(self):
         pass
