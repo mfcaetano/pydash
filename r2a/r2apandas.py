@@ -40,8 +40,9 @@ class r2aPandas(IR2A):
         self.initpandas() # faz a iniciação dos valores do algoritmo após receber o mpd
         self.send_up(msg)
 
-    def handle_segment_size_request(self, msg): # NAO DEVERIA TER UPDATE_REQUEST AQUI TBM?
-        msg.add_quality_id(self.pandas.get_quality()) # ESTA PASSANDO QUALIDADE E N ID DELA
+    def handle_segment_size_request(self, msg):
+        #msg.add_quality_id(self.pandas.get_quality())
+        msg.add_quality_id(self.pandas.r[0])
         #self.pandas.put_trequest()
         self.pandas.update_request(time.perf_counter())
         self.send_down(msg)
@@ -95,6 +96,7 @@ class Pandas:
         self.r[1] = x0    
 
     # Estimativa da porção da largura de banda
+    '''
     def estimate_xn(self):
         self.tr.append(max(self.tnd[-1], self.td[-1])) #NA PRIMEIRA VEZ DARIA 0?????
         m = max(0, self.x[-1]-self.z[-1]+self.w) 
@@ -124,7 +126,10 @@ class Pandas:
     def get_rup(self):
         y = self.y[-1] - self.deltaup #Chamando de y pq?? Pra confundir????
         qi2 = self.qi[self.qi <= y] #ERRADO / guardar indice em vez de valor
-        '''
+
+        return qi2[-1]
+
+        #Sugestao: 
         i2 = 0
         qi2 = 0
         for i,q in qi:
@@ -133,8 +138,6 @@ class Pandas:
             if qi2 == q:
                 i2 = i
         return i2
-        '''
-        return qi2[-1]
     
     def get_rdown(self):
         y = self.y[-1] - self.deltadown #Chamando de y pq?? Pra confundir????
@@ -155,7 +158,7 @@ class Pandas:
     def get_buffersize(self, b):
         self.b = b
         pass
-    
+    '''
     def update_response(self, actual_tresponse):
         self.tresponse = actual_tresponse
         self.td.append(self.tresponse - self.trequest) # tempo do download do segmento
