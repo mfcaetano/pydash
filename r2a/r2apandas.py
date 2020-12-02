@@ -34,22 +34,20 @@ class r2aPandas(IR2A):
         self.pandas.qi = np.array(self.parsed_mpd.get_qi())
 
         #throughput do xml, primeiro throughput do algoritmo
-        self.pandas.td[0] = time.perf_counter()) - self.pandas.trequest
+        self.pandas.td[0] = time.perf_counter() - self.pandas.trequest
         self.pandas.z.append(msg.get_bit_length()/self.pandas.td[0])
         
-        self.initpandas() # faz a iniciação dos valores do algoritmo após receber o mpd
+        self.pandas.initpandas() # faz a iniciação dos valores do algoritmo após receber o mpd
         self.send_up(msg)
 
     def handle_segment_size_request(self, msg):
         #msg.add_quality_id(self.pandas.get_quality())
-        msg.add_quality_id(self.pandas.r[0])
-        #self.pandas.put_trequest()
+        msg.add_quality_id(self.pandas.r[1])
         self.pandas.update_request(time.perf_counter())
         self.send_down(msg)
 
     def handle_segment_size_response(self, msg):
         self.pandas.update_response(time.perf_counter())
-        #self.pandas.put_trequest()
         #self.pandas.get_rate()
         self.send_up(msg)
 
@@ -98,7 +96,7 @@ class Pandas:
     # Estimativa da porção da largura de banda
     '''
     def estimate_xn(self):
-        self.tr.append(max(self.tnd[-1], self.td[-1])) #NA PRIMEIRA VEZ DARIA 0?????
+        self.tr.append(max(self.tnd[-1], self.td[-1])) #na primeira vez daria quanto?????
         m = max(0, self.x[-1]-self.z[-1]+self.w) 
         xn = self.x[-1] + self.k*self.tnd[-1]*(self.w - m) #TND n deveria ser TR?????
         self.x.append(xn)
