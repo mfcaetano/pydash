@@ -297,13 +297,38 @@ class Player(SimpleModule):
             if self.playback_thread.is_alive():
                 self.playback_thread.join()
 
+    def findGoodMult(self, values: list) -> int:
+        self.units = ['Bps', 'KBps', 'MBps', 'GBps', 'TBps']
+        self.mult = [1, 1e3, 1e6, 1e9, 1e12]
+        # Encontra o valor maximo
+        v = 0
+        for i in range(len(values)):
+            if values[i][1] > v:
+                v = values[i][1]
+
+        # Encontra o maior multiplicador
+        index = 0
+        for i in self.mult:
+            # Pode ser que a primeira dê 0
+            if int(v) // (int(i) * 1000) == 0 :
+                break
+            index += 1
+        return index
+        
+
     def logging_all_statistics(self):
-        self.log(self.playback_quality_qi, 'playback_quality_qi', 'Quality QI', 'bps')
+        i1 = self.findGoodMult(self.playback_quality_qi.items)
+        i2 = self.findGoodMult(self.throughput.items)
+
+        self.playback_quality_qi.items = [(x, i / self.mult[i1]) for x, i in self.playback_quality_qi.items]
+        self.throughput.items = [(x, i / self.mult[i2]) for x, i in self.throughput.items]
+
+        self.log(self.playback_quality_qi, 'playback_quality_qi', 'Quality QI', self.units[i1])
         self.log(self.playback_pauses, 'playback_pauses', 'Pauses Size', 'Pauses Size')
         self.log(self.playback, 'playback', 'Playback History', 'on/off')
         self.log(self.playback_qi, 'playback_qi', 'Quality Index', 'QI')
         self.log(self.playback_buffer_size, 'playback_buffer_size', 'Buffer Size', 'seconds')
-        self.log(self.throughput, 'throughput', 'Throughput Variation', 'bps')
+        self.logVlines(self.throughput, 'throughput', 'Throughput Variation', self.units[i2])
 
     def log(self, log, file_name, title, y_axis, x_axis='execution time (s)'):
         items = log.items
@@ -321,6 +346,33 @@ class Player(SimpleModule):
         plt.xlabel(x_axis)
         plt.ylabel(y_axis)
         plt.title(title)
+        plt.ylim(min(y), max(y)*4/3)
+
+        plt.savefig(f'./results/{file_name}.png')
+        plt.clf()
+        plt.cla()
+        plt.close()
+
+    def logVlines(self, log, file_name, title, y_axis, x_axis='execution time (s)'):
+        items = log.items
+
+        if len(items) == 0:
+            return
+
+        x = []
+        y = []
+        for i in range(len(items)):
+            x.append(items[i][0])
+            y.append(items[i][1])
+
+        _, ax = plt.subplots()
+        ax.vlines( x, [0] , y, color='brown')
+
+        plt.title(file_name)
+        plt.xlabel(x_axis)
+        plt.ylabel(y_axis)
+        plt.title(title)
+        plt.ylim(0, max(y)*4/3)
 
         plt.savefig(f'./results/{file_name}.png')
         plt.clf()
