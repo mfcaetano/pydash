@@ -298,7 +298,7 @@ class Player(SimpleModule):
                 self.playback_thread.join()
 
     def findGoodMult(self, values: list) -> int:
-        self.units = ['Bps', 'KBps', 'MBps', 'GBps', 'TBps']
+        self.units = ['Bps', 'Kbps', 'Mbps', 'Gbps', 'Tbps']
         self.mult = [1, 1e3, 1e6, 1e9, 1e12]
         # Encontra o valor maximo
         v = 0
