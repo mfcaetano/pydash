@@ -6,5 +6,5 @@
     "traffic_shaping_profile_sequence": "LMH",
     "traffic_shaping_seed": "1",
     "url_mpd" : "http://workbird.cic.unb.br/DASHDatasetTest/BigBuckBunny/1sec/BigBuckBunny_1s_simple_2014_05_09.mpd",
-    "r2a_algorithm": "R2ARandom"
+    "r2a_algorithm": "R2AFixed"
 }

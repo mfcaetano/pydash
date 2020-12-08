@@ -114,7 +114,7 @@ class ConnectionHandler(SimpleModule):
                     length = length - (t * target_throughput)
                     st_data.append((target_throughput, t))
 
-        time.sleep(math.ceil(waiting_time))
+        time.sleep(waiting_time)
 
         if len(st_data) > 0:
             target_throughput = package_size / (time.perf_counter() - self.initial_time)
