@@ -18,6 +18,7 @@ import http.client
 import time
 from scipy.stats import expon
 from base.timer import Timer
+import math
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -64,11 +65,15 @@ class ConnectionHandler(SimpleModule):
 
         self.tsv_position = (self.tsv_position + 1) % len(self.traffic_shaping_values[0])
 
-        return (self.tss_position, self.tsv_position)
+        return self.tss_position, self.tsv_position
+
+    def __get_next_traffic_shaping_positions(self):
+        self.tss_position = (self.tss_position + 1) % len(self.traffic_shaping_sequence)
+        self.tsv_position = (self.tsv_position + 1) % len(self.traffic_shaping_values[0])
+        return self.tss_position, self.tsv_position
 
     def initialize(self):
         # self.send_down(Message(MessageKind.SEGMENT_REQUEST, 'Olá Mundo'))
-
         pass
 
     def bandwidth_limitation(self, package_size=0):
@@ -78,8 +83,6 @@ class ConnectionHandler(SimpleModule):
         tsp = self.get_traffic_shaping_positions()
         target_throughput = self.traffic_shaping_values[self.traffic_shaping_sequence[tsp[0]]][tsp[1]]
 
-        print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - profile: ({self.traffic_shaping_sequence[tsp[0]]}, {tsp[1]})')
-
         rtt = time.perf_counter() - self.initial_time
         throughput = package_size / rtt
 
@@ -88,17 +91,43 @@ class ConnectionHandler(SimpleModule):
             return
 
         waiting_time = (package_size - (target_throughput * rtt)) / target_throughput
-        time.sleep(waiting_time)
+
+        st_data = []
+        if waiting_time > self.traffic_shaping_interval:
+
+            waiting_time = self.traffic_shaping_interval
+            length = package_size - (waiting_time * target_throughput)
+            st_data.append((target_throughput, self.traffic_shaping_interval))
+
+            while length > 0:
+                tsp = self.__get_next_traffic_shaping_positions()
+                target_throughput = self.traffic_shaping_values[self.traffic_shaping_sequence[tsp[0]]][tsp[1]]
+
+                t = length / target_throughput
+
+                if t > self.traffic_shaping_interval:
+                    waiting_time += self.traffic_shaping_interval
+                    length = length - (self.traffic_shaping_interval * target_throughput)
+                    st_data.append((target_throughput, self.traffic_shaping_interval))
+                else:
+                    waiting_time += t
+                    length = length - (t * target_throughput)
+                    st_data.append((target_throughput, t))
+
+        time.sleep(math.ceil(waiting_time))
+
+        if len(st_data) > 0:
+            target_throughput = package_size / (time.perf_counter() - self.initial_time)
+
+        print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - {st_data}')
+
 
     def finalization(self):
         pass
 
-
     def handle_xml_request(self, msg):
         if not 'http://' in msg.get_payload():
             raise ValueError('url_mpd parameter should starts with http://')
-
-        self.initial_time = time.perf_counter()
 
         url_tokens = msg.get_payload().split('/')[2:]
         port = '80'
@@ -156,7 +185,6 @@ class ConnectionHandler(SimpleModule):
             print(f'> trying to connecto to: {msg.get_payload()}')
             print(err)
             exit(-1)
-
 
         msg.set_kind(MessageKind.SEGMENT_RESPONSE)
 
