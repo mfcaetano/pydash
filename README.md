@@ -5,7 +5,7 @@ PyDash is a framework for the development of adaptive streaming video algorithms
 
 # Who we are?
 
-Were from the **Department of Computer Science** at the **University of Brasília (UnB)**, Brazil.
+We are from the **Department of Computer Science** at the **University of Brasília (UnB)**, Brazil.
 
 This project is leaded by [Prof. Dr. Marcos Caetano](mailto:mfcaetano@unb.br) and [Prof. Dr. Marcelo Marotta](mailto:marcelo.marotta@unb.br). 
 
