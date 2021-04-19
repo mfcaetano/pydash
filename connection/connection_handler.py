@@ -143,6 +143,7 @@ class ConnectionHandler(SimpleModule):
         except Exception as err:
             print('> Houston, we have a problem!')
             print(f'> trying to connecto to: {msg.get_payload()}')
+            print(f'Execution Time {self.timer.get_current_time()} > msg obj: {msg}')
             print(err)
             exit(-1)
 
@@ -183,6 +184,7 @@ class ConnectionHandler(SimpleModule):
         except Exception as err:
             print('> Houston, we have a problem!')
             print(f'> trying to connecto to: {msg.get_payload()}')
+            print(f'Execution Time {self.timer.get_current_time()} > msg obj: {msg}')
             print(err)
             exit(-1)
 
