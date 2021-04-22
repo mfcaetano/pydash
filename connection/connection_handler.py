@@ -119,7 +119,7 @@ class ConnectionHandler(SimpleModule):
         if len(st_data) > 0:
             target_throughput = package_size / (time.perf_counter() - self.initial_time)
 
-        print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - {st_data}')
+        #print(f'Execution Time {self.timer.get_current_time()} > target throughput: {target_throughput} - {st_data}')
 
 
     def finalization(self):
