@@ -3,6 +3,8 @@ from player.parser import *
 import numpy as np
 import time
 
+# Esta classe pretende representar o algoritimo ABR usando a implementação BOLA.
+
 
 class IR2A_IMPL(IR2A):
 
@@ -20,11 +22,24 @@ class IR2A_IMPL(IR2A):
         # executar o parser do arquivo
         parsed_mpd = parse_mpd(msg.get_payload())
         self.qi = parsed_mpd.get_qi()
+        # enviar a resposta
         self.send_up(msg)
 
     def handle_segment_size_request(self, msg):
+        print('Enter in ABR algorithm')
+        # O video foi segmentado de 6 maneiras diferentes e codificado em 20 formatos distintos
+        QTD_FORMAT = 20
+
+        #  Tamanho maximo do buffer
+        Q_MAX = self.whiteboard.get_max_buffer_size()
+
+        # Implementacao dinamica
+        # T_MIN = min(t_in, t_out)
+        # T_RES = max((T_MIN/2), 3)
+        # Q_MAX = min(Q_MAX, T_RES)
+
         #  GAMMA_PARAMETER corresponde à intensidade com que queremos evitar o rebuffering.
-        #  Deveria ser um valor dinamico, mas por simplicidade esta sendo inicializado manualmente
+        #  TODO -  Deveria ser um valor dinamico, mas por simplicidade esta sendo inicializado manualmente
         GAMMA_PARAMETER = 5
 
         # time.perf_counter() retorna o tempo em que a mensagem será encaminhada para o singletton ConnectionHandler
@@ -33,8 +48,7 @@ class IR2A_IMPL(IR2A):
 
         # Um desafio de implantação envolve a escolha do BOLA parâmetros γ(GAMMA_PARAMETER) e V(PARAM).
         # Parâmetro de controle definido pelo Bola para possibilitar troca entre o tamanho do buffer e desempenho
-        PARAM = (self.whiteboard.get_max_buffer_size() - 1) / \
-            (self.vM + GAMMA_PARAMETER)
+        PARAM = ((Q_MAX - 1) / self.vM + GAMMA_PARAMETER)
 
         # Salva em buffers = A lista de tamanho dos buffers
         buffers = self.whiteboard.get_playback_buffer_size()
@@ -51,14 +65,13 @@ class IR2A_IMPL(IR2A):
         current_buffer = buffers[-1]
 
         # Escolhe o indice de qualidade
-        # O video foi segmentado de 6 maneiras diferentes e codificado em 20 formatos distintos
-        for i in range(20):
+        for i in range(QTD_FORMAT):
             utility = np.log(self.qi[i] / self.qi[0])
             m_candidate = (PARAM * utility + PARAM * 5 -
                            current_buffer[1]) / self.qi[i]
 
             # Define o maior valor para a variavel m_candidate
-            if m_candidate > m:
+            if m < m_candidate:
                 m = m_candidate
                 selected_qi = i
 
@@ -80,9 +93,15 @@ class IR2A_IMPL(IR2A):
                     elif (m1 >= m):
                         m1 = selected_qi
                     else:
-                        m1 = m1 + 1
+                        m1 += 1
 
                     selected_qi = m1
+            # Possivel abandono
+            # TODO - Implementar metodo de pausa
+            else:
+                m1 = selected_qi
+                selected_qi = m1
+                # selected_qi = max((Q_MAX + 1), 0)
 
         msg.add_quality_id(self.qi[selected_qi])
         self.send_down(msg)
@@ -90,7 +109,7 @@ class IR2A_IMPL(IR2A):
     def handle_segment_size_response(self, msg):
         self.vM = np.log(msg.get_quality_id() / self.qi[0])
 
-        # Determina o tempo que durou entre a mensagem ser encaminhada para o ConnectionHandler e voltar
+        # tempDuracao = tempo de duração entre a ida e a volta da mensagem ao ConnectionHandler
         tempDuracao = time.perf_counter() - self.request_time
 
         # Determina o throughput sobre a requisição do segmento de vídeo
