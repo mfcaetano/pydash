@@ -6,7 +6,7 @@ import time
 # Esta classe pretende representar o algoritimo ABR usando a implementação BOLA.
 
 
-class IR2A_IMPL(IR2A):
+class R2ABola(IR2A):
 
     def __init__(self, id):
         IR2A.__init__(self, id)
@@ -48,7 +48,7 @@ class IR2A_IMPL(IR2A):
 
         # Um desafio de implantação envolve a escolha do BOLA parâmetros γ(GAMMA_PARAMETER) e V(PARAM).
         # Parâmetro de controle definido pelo Bola para possibilitar troca entre o tamanho do buffer e desempenho
-        PARAM = ((Q_MAX - 1) / self.vM + GAMMA_PARAMETER)
+        PARAM = ((Q_MAX - 1) / self.vM) + GAMMA_PARAMETER
 
         # Salva em buffers = A lista de tamanho dos buffers
         buffers = self.whiteboard.get_playback_buffer_size()
