@@ -16,6 +16,7 @@ class R2A_Tentativa(IR2A):
     def retorna_tamanho_buffer(self):
         lista_buffers = self.whiteboard.get_playback_buffer_size()
 
+        #
         if len(lista_buffers) > 0:
             return lista_buffers[-1][1]
         else:
