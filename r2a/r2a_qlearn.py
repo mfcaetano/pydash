@@ -18,6 +18,7 @@ class R2A_Tentativa(IR2A):
 
         if len(lista_buffers) > 0:
             return lista_buffers[-1][1]
+            #ultimo elemento
         else:
             return 0
 
@@ -26,6 +27,18 @@ class R2A_Tentativa(IR2A):
         self.send_down(msg)
 
     def handle_xml_response(self, msg):
+
+
+#    MPD:
+#           
+#        self.mpd_dict = {}
+#        self.period_dict = {}
+#        self.program_info_dict = {}
+#        self.adaptation_set_list = []
+#        self.adaptation_set_dict = {}
+#        self.title = ""
+#        self.segment_template = {}
+#        self.first_level_adp_set = {}
 
         parsed_mpd = parse_mpd(msg.get_payload())
         self.qualidades = parsed_mpd.get_qi()
