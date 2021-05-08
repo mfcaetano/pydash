@@ -35,7 +35,7 @@ class R2A_PANDA(IR2A):
         else:
             vazao_estimada_anterior = self.vazoes[-1] #Analisar ainda o que devo botar aqui
 
-        vazao_estimada = ((k * (w - max(0,vazao_estimada_anterior - vazao_calculada_anterior + w))) * T) + vazao_estimada_anterior
+        vazao_estimada = ((k * (w - max(0,vazao_estimada_anterior - vazao_calculada_anterior + w))) * T_anterior) + vazao_estimada_anterior
         self.vazoes_alvo.append(vazao_estimada)
         
         return vazao_estimada
@@ -48,12 +48,12 @@ class R2A_PANDA(IR2A):
 
         return estimativa_suavizada
 
-    def corresponder_qualidade(estimativa_suavizada):
+    def corresponder_qualidade(self, estimativa_suavizada):
         for x in self.qualidades:
             if estimativa_suavizada > x:
-                qualidade_selecionada = x
+                qi_selecionada = x
 
-        return qualidade_selecionada
+        return qi_selecionada
 
     #Relacionado ao traffic_shapping_interval
     def planejar_intervalo_download(qualidade_selecionada,estimativa_suavizada):
@@ -91,7 +91,7 @@ class R2A_PANDA(IR2A):
         vazao_suavizada = self.suavizar_estimativa()
         print(vazao_suavizada)
         #3) Quantificar taxa de bits discreta pedida
-        qualidade_selecionada = corresponder_qualidade(vazao_suavizada)
+        qualidade_selecionada = self.corresponder_qualidade(vazao_suavizada)
 
         self.tempo_requisicao = time.perf_counter()
         buffer_atual = self.retorna_tamanho_buffer()
