@@ -4,7 +4,7 @@ import time
 from statistics import mean
 
 
-class R2A_Tentativa(IR2A):
+class R2A_PANDA(IR2A):
 
     def __init__(self, id):
         IR2A.__init__(self, id)
@@ -24,7 +24,7 @@ class R2A_Tentativa(IR2A):
         else:
             return 0
 
-    def estimar_vazao_alvo():
+    def estimar_vazao_alvo(self):
         k = 3 #taxa de convergência de sondagem
         w = 5 #taxa de aumento aditivo
         T_anterior = self.historico_rtt[-1]
@@ -40,7 +40,7 @@ class R2A_Tentativa(IR2A):
         
         return vazao_estimada
 
-    def suavizar_estimativa():
+    def suavizar_estimativa(self):
         while len(self.vazoes_alvo) > 5:
             self.vazoes_alvo.pop(0)
 
@@ -55,6 +55,7 @@ class R2A_Tentativa(IR2A):
 
         return qualidade_selecionada
 
+    #Relacionado ao traffic_shapping_interval
     def planejar_intervalo_download(qualidade_selecionada,estimativa_suavizada):
         beta = 2 #taxa de convergência
         ultimo_buffer = self.retorna_tamanho_buffer()
@@ -72,7 +73,7 @@ class R2A_Tentativa(IR2A):
 
         parsed_mpd = parse_mpd(msg.get_payload())
         self.qualidades = parsed_mpd.get_qi()
-        self.id_qualidade_selecionada = (len(self.qualidades) // 3)
+        #self.id_qualidade_selecionada = (len(self.qualidades) // 3)
 
         rtt = time.perf_counter() - self.tempo_requisicao #Cálculo do Round Trip Time
         self.historico_rtt.append(rtt) #adição do RTT calculado à lista
@@ -82,36 +83,18 @@ class R2A_Tentativa(IR2A):
         self.send_up(msg)
 
     def handle_segment_size_request(self, msg):
+
+        #1) estimar a alocação de banda a se pedir na requisição
+        vazao_estimada = self.estimar_vazao_alvo()
+        print(vazao_estimada)
+        #2) Suavizar a estimativa de banda
+        vazao_suavizada = self.suavizar_estimativa()
+        print(vazao_suavizada)
+        #3) Quantificar taxa de bits discreta pedida
+        qualidade_selecionada = corresponder_qualidade(vazao_suavizada)
+
         self.tempo_requisicao = time.perf_counter()
-        ultima_vazao = self.vazoes[-1]
         buffer_atual = self.retorna_tamanho_buffer()
-
-        if buffer_atual > 15:
-            if ultima_vazao > mean(self.vazoes):
-                if self.id_qualidade_selecionada <= (len(self.qualidades) - 5):
-                    self.id_qualidade_selecionada += 4
-                else:
-                    self.id_qualidade_selecionada = len(self.qualidades) - 1
-            else:
-                if self.id_qualidade_selecionada <= (len(self.qualidades) - 2):
-                    self.id_qualidade_selecionada += 1
-                else:
-                    self.id_qualidade_selecionada = len(self.qualidades) - 1
-        elif buffer_atual <= 15 and buffer_atual > 3:
-            if ultima_vazao > mean(self.vazoes):
-                if self.id_qualidade_selecionada <= (len(self.qualidades) - 3):
-                    self.id_qualidade_selecionada += 2
-                else:
-                    self.id_qualidade_selecionada = len(self.qualidades) - 1
-            else:
-                if self.id_qualidade_selecionada >= 4:
-                    self.id_qualidade_selecionada -= 4
-                else:
-                    self.id_qualidade_selecionada = 0
-        else:
-            self.id_qualidade_selecionada = 0
-
-        qualidade_selecionada = self.qualidades[self.id_qualidade_selecionada]
 
         msg.add_quality_id(qualidade_selecionada)
         self.send_down(msg)
