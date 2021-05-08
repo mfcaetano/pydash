@@ -56,7 +56,7 @@ class R2A_PANDA(IR2A):
         return qi_selecionada
 
     #Relacionado ao traffic_shapping_interval
-    def planejar_intervalo_download(qualidade_selecionada,estimativa_suavizada):
+    def planejar_intervalo_download(self,qualidade_selecionada,estimativa_suavizada):
         beta = 2 #taxa de convergência
         ultimo_buffer = self.retorna_tamanho_buffer()
         buffer_minimo = 3
@@ -92,11 +92,14 @@ class R2A_PANDA(IR2A):
         print(vazao_suavizada)
         #3) Quantificar taxa de bits discreta pedida
         qualidade_selecionada = self.corresponder_qualidade(vazao_suavizada)
+        #4) Planejar tempo até enviar a próxima requisição
+        tempo_ate_pedido = self.planejar_intervalo_download(qualidade_selecionada,vazao_suavizada)
 
         self.tempo_requisicao = time.perf_counter()
         buffer_atual = self.retorna_tamanho_buffer()
 
         msg.add_quality_id(qualidade_selecionada)
+        time.sleep(tempo_ate_pedido)
         self.send_down(msg)
 
     def handle_segment_size_response(self, msg):
