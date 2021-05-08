@@ -41,13 +41,19 @@ class R2A_Tentativa(IR2A):
         return vazao_estimada
 
     def suavizar_estimativa():
-
         while len(self.vazoes_alvo) > 5:
             self.vazoes_alvo.pop(0)
 
         estimativa_suavizada = mean(self.vazoes_alvo)
 
         return estimativa_suavizada
+
+    def corresponder_qualidade(estimativa_suavizada):
+        for x in self.qualidades:
+            if estimativa_suavizada > x:
+                qualidade_selecionada = x
+
+        return qualidade_selecionada
 
     def handle_xml_request(self, msg):
         self.tempo_requisicao = time.perf_counter()
