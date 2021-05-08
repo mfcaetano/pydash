@@ -55,6 +55,15 @@ class R2A_Tentativa(IR2A):
 
         return qualidade_selecionada
 
+    def planejar_intervalo_download(qualidade_selecionada,estimativa_suavizada):
+        beta = 2 #taxa de convergência
+        ultimo_buffer = self.retorna_tamanho_buffer()
+        buffer_minimo = 3
+
+        tempo_estimado = ((qualidade_selecionada * t_segmento)/estimativa_suavizada) + beta * (ultimo_buffer - buffer_minimo)
+
+        return tempo_estimado
+
     def handle_xml_request(self, msg):
         self.tempo_requisicao = time.perf_counter()
         self.send_down(msg)
