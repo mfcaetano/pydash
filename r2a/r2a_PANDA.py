@@ -29,8 +29,25 @@ class R2A_Tentativa(IR2A):
         w = 5 #taxa de aumento aditivo
         T_anterior = self.historico_rtt[-1]
         vazao_calculada_anterior = self.vazoes[-1]
-        vazao_estimada_anterior = self.vazoes_alvo[-1]
+        
+        if len(self.vazoes_alvo):
+            vazao_estimada_anterior = self.vazoes_alvo[-1]
+        else:
+            vazao_estimada_anterior = self.vazoes[-1] #Analisar ainda o que devo botar aqui
+
         vazao_estimada = ((k * (w - max(0,vazao_estimada_anterior - vazao_calculada_anterior + w))) * T) + vazao_estimada_anterior
+        self.vazoes_alvo.append(vazao_estimada)
+        
+        return vazao_estimada
+
+    def suavizar_estimativa():
+
+        while len(self.vazoes_alvo) > 5:
+            self.vazoes_alvo.pop(0)
+
+        estimativa_suavizada = mean(self.vazoes_alvo)
+
+        return estimativa_suavizada
 
     def handle_xml_request(self, msg):
         self.tempo_requisicao = time.perf_counter()
@@ -46,8 +63,6 @@ class R2A_Tentativa(IR2A):
         self.historico_rtt.append(rtt) #adição do RTT calculado à lista
         self.vazoes.append(msg.get_bit_length() / rtt)
 
-        while len(self.vazoes) > 5:
-            self.vazoes.pop(0)
 
         self.send_up(msg)
 
