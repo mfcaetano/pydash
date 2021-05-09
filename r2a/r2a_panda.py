@@ -49,6 +49,8 @@ class R2A_PANDA(IR2A):
         return estimativa_suavizada
 
     def corresponder_qualidade(self, estimativa_suavizada):
+
+        qi_selecionada = self.qualidades[0]
         for x in self.qualidades:
             if estimativa_suavizada > x:
                 qi_selecionada = x
@@ -60,10 +62,14 @@ class R2A_PANDA(IR2A):
         beta = 2 #taxa de convergência
         ultimo_buffer = self.retorna_tamanho_buffer()
         buffer_minimo = 3
+        t_segmento = 1 # 1 segundo de duração do segmento de vídeo
 
         tempo_estimado = ((qualidade_selecionada * t_segmento)/estimativa_suavizada) + beta * (ultimo_buffer - buffer_minimo)
 
-        return tempo_estimado
+        if tempo_estimado > 0:
+            return tempo_estimado
+        else:
+            return 0
 
     def handle_xml_request(self, msg):
         self.tempo_requisicao = time.perf_counter()
