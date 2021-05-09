@@ -59,12 +59,12 @@ class R2A_PANDA(IR2A):
 
     #Relacionado ao traffic_shapping_interval
     def planejar_intervalo_download(self,qualidade_selecionada,estimativa_suavizada):
-        beta = 2 #taxa de convergência
+        beta = 0.5 #taxa de convergência
         ultimo_buffer = self.retorna_tamanho_buffer()
-        buffer_minimo = 3
+        buffer_minimo = 0
         t_segmento = 1 # 1 segundo de duração do segmento de vídeo
 
-        tempo_estimado = ((qualidade_selecionada * t_segmento)/estimativa_suavizada) + beta * (ultimo_buffer - buffer_minimo)
+        tempo_estimado = ((qualidade_selecionada * t_segmento)/estimativa_suavizada) + ( beta * (ultimo_buffer - buffer_minimo))
 
         if tempo_estimado > 0:
             return tempo_estimado
