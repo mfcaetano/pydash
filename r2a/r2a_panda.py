@@ -39,7 +39,7 @@ class R2A_PANDA(IR2A):
         if len(self.vazoes_suavizadas) > 0:
             vazao_calculada_anterior = self.vazoes_suavizadas[-1]
         else:
-            vazao_calculada_anterior = self.vazoes[-1] #Analisar ainda o que devo botar aqui
+            vazao_calculada_anterior = self.vazoes[-1] -1000 #Analisar ainda o que devo botar aqui
 
         vazao_estimada = ((k * (w - max(0,vazao_estimada_anterior - vazao_calculada_anterior + w))) * T_anterior) + vazao_estimada_anterior
         self.vazoes_alvo.append(vazao_estimada)
