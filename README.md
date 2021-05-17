@@ -1,5 +1,6 @@
 # pyDash: A Framework Based Educational Tool for Adaptive Streaming Video Algorithms Study
-A Python Dash Project.
+
+![bigbuckbunny](https://user-images.githubusercontent.com/4336448/118493151-2b9fc380-b6f7-11eb-8a25-9134862da754.jpg) A Python Dash Project. 
 
 PyDash is a framework for the development of adaptive streaming video algorithms. It is a learning tool designed to abstract the networking communication details, allowing e-students to focus exclusively on developing and evaluating ABR protocols.
 
