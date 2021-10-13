@@ -91,6 +91,8 @@ class SSMessage(Message):
         return bool(self.bit_length > 0 and self.__found)
 
     def get_url(self):
-        self.media_mpd = self.media_mpd.replace('$Bandwidth$', str(self.quality_id))
-        self.media_mpd = self.media_mpd.replace('$Number$', str(self.segment_id))
-        return self.path_name + '/' + self.media_mpd
+        media_mpd = self.media_mpd
+        media_mpd = media_mpd.replace('$Bandwidth$', str(self.quality_id))
+        media_mpd = media_mpd.replace('$Number$', str(self.segment_id))
+        return self.path_name + '/' + media_mpd
+        
