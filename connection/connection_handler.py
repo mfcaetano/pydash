@@ -67,11 +67,6 @@ class ConnectionHandler(SimpleModule):
 
         return self.tss_position, self.tsv_position
 
-    def __get_next_traffic_shaping_positions(self):
-        self.tss_position = (self.tss_position + 1) % len(self.traffic_shaping_sequence)
-        self.tsv_position = (self.tsv_position + 1) % len(self.traffic_shaping_values[0])
-        return self.tss_position, self.tsv_position
-
     def initialize(self):
         # self.send_down(Message(MessageKind.SEGMENT_REQUEST, 'Olá Mundo'))
         pass
