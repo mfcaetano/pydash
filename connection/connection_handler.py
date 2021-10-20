@@ -56,8 +56,8 @@ class ConnectionHandler(SimpleModule):
 
         self.timer = Timer.get_instance()
 
-    def get_traffic_shaping_positions(self):
-        current_tsi = self.timer.get_current_time() // self.traffic_shaping_interval
+    def get_traffic_shaping_positions(self, delta_time=0.0):
+        current_tsi = (self.timer.get_current_time() + delta_time) // self.traffic_shaping_interval
 
         if current_tsi > self.current_traffic_shaping_interval:
             self.current_traffic_shaping_interval = current_tsi
@@ -100,7 +100,7 @@ class ConnectionHandler(SimpleModule):
             st_data.append((target_throughput, self.traffic_shaping_interval))
 
             while length > 0:
-                tsp = self.__get_next_traffic_shaping_positions()
+                tsp = self.get_traffic_shaping_positions(waiting_time)
                 target_throughput = self.traffic_shaping_values[self.traffic_shaping_sequence[tsp[0]]][tsp[1]]
 
                 t = length / target_throughput
