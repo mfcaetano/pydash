@@ -4,6 +4,11 @@
 
 PyDash is a framework for the development of adaptive streaming video algorithms. It is a learning tool designed to abstract the networking communication details, allowing e-students to focus exclusively on developing and evaluating ABR protocols.
 
+PyDash is licensed as GPL. You are more than welcome to use PyDash and contribute to the project. We just ask you to properly cite our contribution as follows.
+
+> M. A. Marotta, G. C. Souza, M. Holanda and M. F. Caetano, ["PyDash - A Framework Based Educational Tool for Adaptive Streaming Video Algorithms Study"](https://ieeexplore.ieee.org/document/9637335), 2021 IEEE Frontiers in Education Conference (FIE), 2021, pp. 1-8, doi: 10.1109/FIE49875.2021.9637335.
+
+
 # Who we are?
 
 We are from the **Department of Computer Science** at the **University of Brasília (UnB)**, Brazil.
