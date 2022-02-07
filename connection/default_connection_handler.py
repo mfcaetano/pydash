@@ -4,12 +4,12 @@
 
 @description: PyDash Project
 
-The ConnectionHandler is a Singleton class implementation
+The DefaultConnectionHandler is a Singleton class implementation
 
 The class responsible to retrieve segments in the web server.
 Also it implements a traffic shaping approach.
 """
-
+ 
 from base.simple_module import SimpleModule
 from base.message import Message, MessageKind, SSMessage
 from base.configuration_parser import ConfigurationParser
@@ -23,7 +23,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-class ConnectionHandler(SimpleModule):
+class DefaultConnectionHandler(SimpleModule):
 
     def __init__(self, id):
         SimpleModule.__init__(self, id)

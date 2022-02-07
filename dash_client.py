@@ -15,7 +15,7 @@ import importlib
 
 from base.configuration_parser import ConfigurationParser
 from base.scheduler import Scheduler
-from connection.connection_handler import ConnectionHandler
+from connection import *
 from player.player import Player
 
 
@@ -37,7 +37,12 @@ class DashClient:
         r2a_class = getattr(importlib.import_module('r2a.' + r2a_algorithm.lower()), r2a_algorithm)
         self.r2a = r2a_class(1)
 
-        self.connection_handler = ConnectionHandler(2)
+        # automatic loading class by the name
+        connection_handler_class_name = str(config_parser.get_parameter('connection_handler_algorithm'))
+        connection_handle_file = '_'.join(''.join([(" " + i if i.isupper() or i.isnumeric() else i) for i in connection_handler_class_name]).strip().lower().split())
+        connection_handler_class = getattr(importlib.import_module('connection.' + connection_handle_file), connection_handler_class_name)
+
+        self.connection_handler = connection_handler_class(2)
 
         self.modules.append(self.player)
         self.modules.append(self.r2a)
