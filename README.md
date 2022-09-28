@@ -34,35 +34,35 @@ There are a few ways for you to set your development environment. In this sectio
 git clone https://github.com/mfcaetano/pydash.git
 ```
 
-Se você está fazendo uma das cadeiras de redes do Departamento de Computação da UnB, sugerimos que você não faça simplesmente o download do código. Clone o repositório pois atualizações desta ferramenta serão feitas para que novas funcionalidades sejam disponibilizadas para vocês.
+If you are doing a Computer Networking class at the Department of Computer Science at the UnB, we strongly suggest that you should clone the repository instead of just downloading it. Source code updates could be available and new functionalities released during the current semester.
 
 ```
 python3 -m venv pydash/venv
 ```
 
-* Entre no repositório
+* Get in the repository folder.
 
 ```
 cd pydash
 ```
 
-* O próximo passo é ativar o terminal e carregar as configurações python.
+* The next step is to activate the terminal and load the python configurations.
 
 ```
 source venv/bin/activate
 ```
 
-* Agora você precisa instalar as bibliotecas utilizadas pela ferramenta pyDash.
+* Now, you need to install the dependency libraries used by pyDash.
 ```
 pip3 install -r requirements.txt
 ```
 
-Pronto! Para testar o código, basta executar:
+Done! To test your pyDash installation, you have to execute:
 ```
 python3 main.py
 ```
 
-# Arquitetura 
+# Architecture 
 
 ![Arquitetura](https://user-images.githubusercontent.com/4336448/98450304-85a54800-211a-11eb-93f7-fd4e60c46ed5.png)
 
