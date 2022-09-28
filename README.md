@@ -20,15 +20,15 @@ If you have any questions regarding the pyDash project, please drop us an email.
 
 # Instalation Process
 
-## Pré-requisitos
+## Requirements
 
-Para a utilização deste projeto é necessária a instalação de alguns pacotes python descritos no arquivo [requirements.txt](requirements.txt). 
+It is necessary the installation of few python packages before you can use PyDash. The requirements are described in [requirements.txt](requirements.txt) file. 
 
-## Por onde eu começo?
+## Where do I start?
 
-Existem algumas formas de você configurar o seu ambiente. Nesta seção iremos apresentar apenas uma das formas possíveis.
+There are a few ways for you to set your development environment. In this section, we will present you with just one possible way to do this.
 
-* O primeiro passo é fazer o checkout do seu código. Utilizando um terminal, faça um clone do repositório.
+* The first step is to do the checkout of the pyDash source code. You should have git software installed on your operating system. Using a terminal, do the pyDash source code repository clone operation.
 
 ```
 git clone https://github.com/mfcaetano/pydash.git
