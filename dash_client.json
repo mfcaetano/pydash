@@ -5,6 +5,6 @@
     "traffic_shaping_profile_interval": "5",
     "traffic_shaping_profile_sequence": "LMH",
     "traffic_shaping_seed": "1",
-    "url_mpd" : "http://45.171.101.167/DASHDataset/BigBuckBunny/1sec/BigBuckBunny_1s_simple_2014_05_09.mpd",
+    "url_mpd" : "http://164.41.67.41/DASHDatasetTest/BigBuckBunny/1sec/BigBuckBunny_1s_simple_2014_05_09.mpd",
     "r2a_algorithm": "R2AFuzzy"
 }
