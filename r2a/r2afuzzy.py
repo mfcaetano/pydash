@@ -29,61 +29,71 @@ class R2AFuzzy(IR2A):
         msg.add_quality_id(self.qi[0])
         self.send_down(msg)
 
+    def linear_function(self,x0,x1, diff = False):
+        a  = 1 / (x1 - x0)
+        b = - (a * x0)
+        if diff:
+            return a * self.diff + b
+        return a * self.buffer_time + b
+
     def output_controller(self, buffer):
         T = 35
         TWO_THIRDS_T = (2 * T) /3
         FOUR_T = 4 * T
-        buffer_time = buffer[-1][1]
-        previous_buffer_time = buffer[-2][1]
-        self.buffers.append(buffer_time)
+        self.buffer_time = buffer[-1][1]
+        try:
+            previous_buffer_time = self.buffers[-1]
+        except:
+            previous_buffer_time = self.buffer_time
+        self.buffers.append(self.buffer_time)
         FACTORS = {'N2':0.25,'N1':0.5, 'Z':1, 'P1':1.5, 'P2':2}
         short, close, long, falling, steady, rising = 0,0,0,0,0,0
 
-        if(buffer_time <= TWO_THIRDS_T):
+        if(self.buffer_time <= TWO_THIRDS_T):
             short = 1
-        elif(buffer_time >= T):
+        elif(self.buffer_time >= T):
             short = 0
         else:
-            short = ((-3) * buffer_time) / T + 3
+            short = self.linear_function(T, TWO_THIRDS_T)
         
-        if(buffer_time <= TWO_THIRDS_T or buffer_time >= FOUR_T):
+        if(self.buffer_time <= TWO_THIRDS_T or self.buffer_time >= FOUR_T):
             close = 0
-        elif(buffer_time <= T):
-            close = (3 / T) * buffer_time - 2
+        elif(self.buffer_time <= T):
+            close = self.linear_function(TWO_THIRDS_T, T)
         else:
-            close = (-buffer_time) / (3 * T) + 4 / 3
+            close = self.linear_function(FOUR_T, T)
 
-        if(buffer_time <= T):
+        if(self.buffer_time <= T):
             long = 0
-        elif(buffer_time >= 4*T):
+        elif(self.buffer_time >= 4*T):
             long = 1
         else:
-            long = buffer_time / (3*T) - 1 / 3
+            long = self.linear_function(T, FOUR_T)
 
-        diff = buffer_time - previous_buffer_time
+        self.diff = self.buffer_time - previous_buffer_time
 
-        if diff <= -(TWO_THIRDS_T):
+        if self.diff <= -(TWO_THIRDS_T):
             falling = 1
-        elif diff >= 0:
+        elif self.diff >= 0:
             falling = 0
         else:
-            falling = (-3 * diff) / (2 * T)
+            falling = self.linear_function(0, - TWO_THIRDS_T, True)
 
-        if diff <= -(TWO_THIRDS_T) or diff >= FOUR_T:
+        if self.diff <= -(TWO_THIRDS_T) or self.diff >= FOUR_T:
             steady = 0
-        elif diff <= 0:
-            steady = (3 / (2 * T)) * diff + 1
+        elif self.diff <= 0:
+            steady = self.linear_function(-TWO_THIRDS_T, 0, True)
         else:
-            steady = - diff / (FOUR_T) + 1
+            steady = self.linear_function(FOUR_T, 0, True)
 
-        if diff <= 0:
+        if self.diff <= 0:
             rising = 0
-        elif diff >= FOUR_T:
+        elif self.diff >= FOUR_T:
             rising = 1
         else:
-            rising = diff / FOUR_T
+            rising = self.linear_function(0, FOUR_T, True)
 
-        print(f"*******************{previous_buffer_time, buffer_time}")
+        print(f"*******************{previous_buffer_time, self.buffer_time}")
         print(f'>>>>>>>>>>>>>>>>>>>>.{short, close, long}')
         print(f'>>>>>>>>>>>>>>>>>>>>.{falling, steady, rising}')
         
