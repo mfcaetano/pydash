@@ -17,12 +17,24 @@ This project is leaded by [Prof. Dr. Marcos Caetano](mailto:mfcaetano@unb.br) an
 
 If you have any questions regarding the pyDash project, please drop us an email.
 
+# Before start
+
+PyDash is an open-source initiative that uses only open-source code as a dependency. We've implemented and tested it using the GNU Linux operating system. The following software versions were used.
+
+* Ubuntu 22.04.03
+* Python 3.10.12
+* numpy 1.26-1
+* matplotlib 3.8.0
+* seaborn 0.13.0
+* scipy 1.11.3
 
 # Instalation Process
 
 ## Requirements
 
 It is necessary the installation of few python packages before you can use PyDash. The requirements are described in [requirements.txt](requirements.txt) file. 
+
+## Requirements ##
 
 ## Where do I start?
 
