@@ -43,7 +43,7 @@ class Player(SimpleModule):
 
         self.buffering_until = int(config_parser.get_parameter('buffering_until'))
         self.max_buffer_size = int(config_parser.get_parameter('max_buffer_size'))
-        self.playback_step = int(config_parser.get_parameter('playbak_step'))
+        self.playback_step = int(config_parser.get_parameter('playback_step'))
         self.url_mpd = config_parser.get_parameter('url_mpd')
 
         # last pause started at time

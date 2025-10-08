@@ -1,7 +1,7 @@
 {
     "buffering_until": 5,
     "max_buffer_size": 60,
-    "playbak_step": 1,
+    "playback_step": 1,
     "traffic_shaping_profile_interval": "5",
     "traffic_shaping_profile_sequence": "LMH",
     "traffic_shaping_seed": "1",
